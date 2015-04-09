@@ -95,7 +95,7 @@ function init() {
 
   // BUILD GRID
 
-  var boardGrid = new Grid(4,180,890,150);
+  var boardGrid = new Grid(4,180,890,145);
   board.addChild(bg,boardGrid);
 
   // GAME MGMT & SCORES
@@ -197,15 +197,15 @@ function init() {
 
       if (i < 2) {
         if (!(i % 2)) {
-          var sequenceTray = new Tray(36,(120 + (i*100)),442,154,black,green,1,i,"selectors");
+          var sequenceTray = new Tray(36,(117 + (i*100)),442,160,black,green,1,i,"selectors");
         } else {
-          var sequenceTray = new Tray(508,(20 + (i*100)),160,154,black,yellow,1,i,"actions"); 
+          var sequenceTray = new Tray(508,(17 + (i*100)),160,160,black,yellow,1,i,"actions"); 
         }
       } else {
         if (!(i % 2)) {
-          var sequenceTray = new Tray(36,(120 + (i*100)),442,154,black,lightGray,.7,i,"selectors");
+          var sequenceTray = new Tray(36,(117 + (i*100)),442,160,black,lightGray,.7,i,"selectors");
         } else {
-          var sequenceTray = new Tray(508,(20 + (i*100)),160,154,black,lightGray,.7,i,"actions"); 
+          var sequenceTray = new Tray(508,(17 + (i*100)),160,160,black,lightGray,.7,i,"actions"); 
         }
       }
 
@@ -217,14 +217,22 @@ function init() {
     buildSequenceLocked(3);
     buildSequenceLocked(4);
 
+    var requiredCondition = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:90,y:150});
+    requiredCondition.alpha = .1;
+
+    var requiredAction = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:563,y:150});
+    requiredAction.alpha = .1;
+
+    dropZoneContainer.addChild(requiredCondition,requiredAction);
+
   }
 
   function buildSequenceStep(row,startSlot) {
 
-    var selectorZone0 = new DropZone(50,((row * 200) - 68),green,.25,startSlot);
-    var logicZone = new DropZone((50 + buttonSize + (buttonMargin+4)),((row * 200) - 68),blue,.25,startSlot+1);
-    var selectorZone1 = new DropZone((50 + (buttonSize*2) + ((buttonMargin+4)*2)),((row * 200) - 68),green,.25,startSlot+2);
-    var actionZone = new DropZone(523,((row * 200) - 68),yellow,.25,startSlot+3);
+    var selectorZone0 = new DropZone(50,((row * 200) - 68),green,.25,"condition",startSlot);
+    var logicZone = new DropZone((50 + buttonSize + (buttonMargin+4)),((row * 200) - 68),blue,.25,"logic",startSlot+1);
+    var selectorZone1 = new DropZone((50 + (buttonSize*2) + ((buttonMargin+4)*2)),((row * 200) - 68),green,.25,"condition",startSlot+2);
+    var actionZone = new DropZone(523,((row * 200) - 68),yellow,.25,"action",startSlot+3);
     dropZoneContainer.addChild(selectorZone0,logicZone,selectorZone1,actionZone);
   }
 
@@ -639,7 +647,7 @@ function loadSelectors(set) {
     return tray;
   }
 
-  function DropZone(x,y,color,alpha,slot) {
+  function DropZone(x,y,color,alpha,type,slot) {
 
     var dz = new createjs.Shape();
     dz.graphics.beginFill(color);
@@ -648,6 +656,7 @@ function loadSelectors(set) {
     dz.x = x;
     dz.y = y;
     dz.alpha = alpha;
+    dz.type = type
     dz.slot = slot;
 
     return dz;
@@ -696,6 +705,7 @@ function loadSelectors(set) {
     var posButton = new createjs.Container();
 
     posButton.type = "position";
+    posButton.slotType = "condition";
     posButton.addEventListener("mousedown",grabItem);
     posButton.addEventListener("pressmove",dragAndDrop);
     posButton.addEventListener("pressup",snapTo);
@@ -734,6 +744,7 @@ function loadSelectors(set) {
     var shapeButton = new createjs.Container();
 
     shapeButton.type = "shape";
+    shapeButton.slotType = "condition";
     shapeButton.addEventListener("mousedown",grabItem);
     shapeButton.addEventListener("pressmove",dragAndDrop);
     shapeButton.addEventListener("pressup",snapTo);
@@ -807,6 +818,7 @@ function loadSelectors(set) {
     var logicButton = new createjs.Container();
 
     logicButton.type = "logic";
+    logicButton.slotType = "logic";
     logicButton.addEventListener("mousedown",grabItem);
     logicButton.addEventListener("pressmove",dragAndDrop);
     logicButton.addEventListener("pressup",snapTo);
@@ -836,6 +848,7 @@ function loadSelectors(set) {
 
     var transformButton = new createjs.Container();
     transformButton.type = "action";
+    transformButton.slotType = "action";
     transformButton.addEventListener("mousedown",grabItem);
     transformButton.addEventListener("pressmove",dragAndDrop);
     transformButton.addEventListener("pressup",snapTo);
@@ -871,6 +884,7 @@ function loadSelectors(set) {
 
     var rotateButton = new createjs.Container();
     rotateButton.type = "action";
+    rotateButton.slotType = "action";
     rotateButton.addEventListener("mousedown",grabItem);
     rotateButton.addEventListener("pressmove",dragAndDrop);
     rotateButton.addEventListener("pressup",snapTo);
@@ -936,6 +950,7 @@ function loadSelectors(set) {
 
     var flipButton = new createjs.Container();
     flipButton.type = "action";
+    flipButton.slotType = "action";
     flipButton.addEventListener("mousedown",grabItem);
     flipButton.addEventListener("pressmove",dragAndDrop);
     flipButton.addEventListener("pressup",snapTo);
@@ -1050,7 +1065,6 @@ function loadSelectors(set) {
           if (event.currentTarget.name == "AND") {
             andCount--;
             andCountLabel.text = andCount;
-            console.log(andCount);
         } else if (event.currentTarget.name == "OR") {
             orCount--;
             orCountLabel.text = orCount;
@@ -1070,7 +1084,7 @@ function loadSelectors(set) {
 
       for (var i = 0; i < dropZoneContainer.children.length; i++) {
         if (dropZoneContainer.children[i].slot == 1 || dropZoneContainer.children[i].slot == 5 || dropZoneContainer.children[i].slot == 9 || dropZoneContainer.children[i].slot == 13) {
-          dropZoneContainer.children[i].alpha = .5;
+          dropZoneContainer.children[i].alpha = .7;
         }
       }
 
@@ -1078,7 +1092,7 @@ function loadSelectors(set) {
 
       for (var i = 0; i < dropZoneContainer.children.length; i++) {
         if (dropZoneContainer.children[i].slot == 3 || dropZoneContainer.children[i].slot == 7 || dropZoneContainer.children[i].slot == 11 || dropZoneContainer.children[i].slot == 15) {
-          dropZoneContainer.children[i].alpha = .5;
+          dropZoneContainer.children[i].alpha = .7;
         }
       }
     
@@ -1086,7 +1100,7 @@ function loadSelectors(set) {
 
       for (var i = 0; i < dropZoneContainer.children.length; i++) {
         if ((dropZoneContainer.children[i].slot % 2) == 0) {
-          dropZoneContainer.children[i].alpha = .5;
+         dropZoneContainer.children[i].alpha = .7;
         }
       }      
     }
@@ -1114,6 +1128,7 @@ function loadSelectors(set) {
     for (var i = 0; i < dropZoneContainer.getObjectsUnderPoint(pt.x,pt.y,0).length; i++) {
       if (dropZoneContainer.getObjectsUnderPoint(pt.x,pt.y,0)[i].slot != null) {
       dropPosition = dropZoneContainer.getObjectsUnderPoint(pt.x,pt.y,0)[i];
+      console.log(dropPosition);
       }
     }
 
@@ -1121,9 +1136,12 @@ function loadSelectors(set) {
 
     if (dropPosition != null && sequence[dropPosition.slot] == null) {
       addToSlot(event.currentTarget,dropPosition);
+    } else if (dropPosition != null && sequence[dropPosition.slot] != null && (event.currentTarget.slotType == dropPosition.type)) {
+      returnToOrigin(sequence[dropPosition.slot],sequence[dropPosition.slot].originParent,sequence[dropPosition.slot].originX,sequence[dropPosition.slot].originY);
+      addToSlot(event.currentTarget,dropPosition);
     } else {
       returnToOrigin(event.currentTarget,event.currentTarget.originParent,event.currentTarget.originX,event.currentTarget.originY);
-    } 
+    }
 
     // unhighlight slots
 
@@ -1255,12 +1273,12 @@ function loadSelectors(set) {
           trays.children[i].graphics
           .clear()
           .beginStroke(green).setStrokeStyle(8).beginFill(black)
-          .drawRoundRect(0,0,442,154,5);
+          .drawRoundRect(0,0,442,160,5);
        } else {
           trays.children[i].graphics
           .clear()
           .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-          .drawRoundRect(0,0,160,154,5);
+          .drawRoundRect(0,0,160,160,5);
         }
     }
 
@@ -1351,12 +1369,12 @@ function loadSelectors(set) {
         trayToHighlight.graphics
         .clear()
         .beginStroke(black).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,154,5);
+        .drawRoundRect(0,0,442,160,5);
       } else {
         trayToHighlight.graphics
         .clear()
         .beginStroke(black).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,154,5);
+        .drawRoundRect(0,0,160,160,5);
       }
 
     stage.update();
@@ -1437,7 +1455,6 @@ function loadSelectors(set) {
       var findMorph = objectsInPlay[i].getChildByName("morph");
       if (findMorph != null) {
         removeMorph(objectsInPlay[i],findMorph);
-        //createjs.Tween.get(findMorph, {override:true}).to({alpha:0}, 600, createjs.Ease.cubicOut).call(removeMorph,[objectsInPlay[i],findMorph]);
       }
 
     }
@@ -1543,15 +1560,18 @@ function loadSelectors(set) {
 
     var completeRows;
     var completeCols;
+    var completeDiag;
 
     var rows = [[0,1,2,3],[4,5,6,7],[8,9,10,11],[12,13,14,15]];
     var cols = [[0,4,8,12],[1,5,9,13],[2,6,10,14],[3,7,11,15]];
+    var diag = [[0,5,10,15],[3,6,9,12]];
 
     switch(n) {
       case 0:
         if (countCompleteShapes(0)) {
           console.log(completeRows);
           console.log(completeCols);
+          console.log(completeDiag);
           endGame(0);
           console.log("black win");
         }
@@ -1560,6 +1580,7 @@ function loadSelectors(set) {
         if (countCompleteShapes(1)) {
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
             endGame(1);
             console.log("white win");
         }
@@ -1568,22 +1589,25 @@ function loadSelectors(set) {
         if ((countCompleteShapes(0)) && !(countCompleteShapes(1))) {
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
             endGame(0);
             console.log("black win");
         } else if (!(countCompleteShapes(0)) && (countCompleteShapes(1))) {
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
             endGame(1);
             console.log("white win");
         } else if ((countCompleteShapes(0)) && (countCompleteShapes(1))) {
             countCompleteShapes(0);
-            var blackTotal = completeRows.length + completeCols.length;
+            var blackTotal = completeRows.length + completeCols.length + completeDiag.length;
             countCompleteShapes(1);
-            var whiteTotal = completeRows.length + completeCols.length;
+            var whiteTotal = completeRows.length + completeCols.length + completeDiag.length;
           if (blackTotal > whiteTotal) {
             countCompleteShapes(0);
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
             endGame(0);
             console.log("black win");
           } else if (whiteTotal > blackTotal) {
@@ -1591,14 +1615,17 @@ function loadSelectors(set) {
             console.log("white win");
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
           } else {
             endGame(2);
             console.log("draw");
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
             countCompleteShapes(0);
             console.log(completeRows);
             console.log(completeCols);
+            console.log(completeDiag);
           }
         }
         break;
@@ -1609,8 +1636,10 @@ function loadSelectors(set) {
       var success = false;
       var rowCounter = 0;
       var colCounter = 0;
+      var diagCounter = 0;
       completeRows = [];
       completeCols = [];
+      completeDiag = [];
 
       for (var a = 0; a < 4; a++) {
         for (var b = 0; b < 4; b++) {
@@ -1619,6 +1648,11 @@ function loadSelectors(set) {
           }
           if (objectsInPlay[cols[a][b]].complete === color) {
             colCounter++;
+          }
+          if (a < 2) {
+            if (objectsInPlay[diag[a][b]].complete === color) {
+              diagCounter++;
+            }
           }
         }
 
@@ -1631,8 +1665,13 @@ function loadSelectors(set) {
           success = true;
           completeCols.push(a);
         }
+        if (diagCounter > 3) {
+          success = true;
+          completeDiag.push(a);
+        }
         rowCounter = 0;
         colCounter = 0;
+        diagCounter = 0;
       }
       return success;
     }
@@ -1653,6 +1692,17 @@ function loadSelectors(set) {
     gameOver = true;
     console.log(gameOver);
     createjs.Ticker.setPaused(false);
+
+    for (var i in objectsInPlay) {
+
+      var findMorph = objectsInPlay[i].getChildByName("morph");
+        if (findMorph != null) {
+        removeMorph(objectsInPlay[i],findMorph);
+      }
+
+      createjs.Tween.get(objectsInPlay[i], {override:true}).to({alpha:1,}, 300, createjs.Ease.cubicIn);
+
+    }
 
     if (color == 0) {
       var winner = "BLACK WINS";
@@ -1710,7 +1760,7 @@ function loadSelectors(set) {
     actionsBox.mouseEnabled = false;
     stage.update();
 
-    createjs.Tween.get(winOverlay, {override:true}).call(addAnim,[0]).to({y:890}, 300, createjs.Ease.cubicInOut).call(rmAnim);
+    createjs.Tween.get(winOverlay, {override:true}).wait(50).call(addAnim,[0]).to({y:890}, 300, createjs.Ease.cubicInOut).call(rmAnim);
 
     function newGameBannerHighlight() {
       newGameBanner.alpha = .9;
@@ -1741,7 +1791,7 @@ function loadSelectors(set) {
         removeMorph(objectsInPlay[i],findMorph);
       }
 
-      createjs.Tween.get(objectsInPlay[i], {override:true}).call(addAnim,[0]).to({alpha:1,}, 300, createjs.Ease.cubicIn).call(rmAnim);
+      createjs.Tween.get(objectsInPlay[i], {override:true}).to({alpha:1,}, 300, createjs.Ease.cubicIn);
 
     }
 
@@ -1779,13 +1829,13 @@ function loadSelectors(set) {
         trays.getChildAt(2).graphics
         .clear()
         .beginStroke(green).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,154,5);
+        .drawRoundRect(0,0,442,160,5);
         trays.getChildAt(2).alpha = 1;
       
         trays.getChildAt(3).graphics
         .clear()
         .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,154,5);
+        .drawRoundRect(0,0,160,160,5);
         trays.getChildAt(3).alpha = 1;
 
         buildSequenceStep(2,4);
@@ -1801,13 +1851,13 @@ function loadSelectors(set) {
         trays.getChildAt(4).graphics
         .clear()
         .beginStroke(green).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,154,5);
+        .drawRoundRect(0,0,442,160,5);
         trays.getChildAt(4).alpha = 1;
       
         trays.getChildAt(5).graphics
         .clear()
         .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,154,5);
+        .drawRoundRect(0,0,160,160,5);
         trays.getChildAt(5).alpha = 1;
 
         buildSequenceStep(3,8);
@@ -1822,13 +1872,13 @@ function loadSelectors(set) {
         trays.getChildAt(6).graphics
         .clear()
         .beginStroke(green).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,154,5);
+        .drawRoundRect(0,0,442,160,5);
         trays.getChildAt(6).alpha = 1;
       
         trays.getChildAt(7).graphics
         .clear()
         .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,154,5);
+        .drawRoundRect(0,0,160,160,5);
         trays.getChildAt(7).alpha = 1;
 
         buildSequenceStep(4,12);
@@ -1865,25 +1915,31 @@ function loadSelectors(set) {
 
     newGameLabel.alpha = 1;
 
-    stage.removeAllChildren();
+    showOverlay("NEW GAME",confirmNewGame);
 
-    objectsInPlay = [];
+    function confirmNewGame() {
+      stage.removeAllChildren();
 
-    for (var i = 0; i < 10; i++) {
-      selectorsP1[i] = null;
-      selectorsP2[i] = null;
+      objectsInPlay = [];
+
+      for (var i = 0; i < 10; i++) {
+        selectorsP1[i] = null;
+        selectorsP2[i] = null;
+      }
+
+      selectorsBox.mouseEnabled = true;
+      sequenceBox.mouseEnabled = true;
+      actionsBox.mouseEnabled = true;
+      newGameButton.mouseEnabled = true;
+      exitButton.mouseEnabled = true;
+
+      clearSequence();
+      loadGame();
+
+      stage.update();
+
+      loadSelectors(selectorsP1);
     }
-
-    selectorsBox.mouseEnabled = true;
-    sequenceBox.mouseEnabled = true;
-    actionsBox.mouseEnabled = true;
-
-    clearSequence();
-    loadGame();
-
-    stage.update();
-
-    loadSelectors(selectorsP1);
   }
 
   function newGameHighlight() {
@@ -1895,22 +1951,32 @@ function loadSelectors(set) {
 
     exitLabel.alpha = 1;
 
-    createjs.Ticker.setPaused(false);
+    showOverlay("QUIT GAME",confirmExit);
 
-    startOverlay.y = canvas.height;
-    loadIntro();
-    stage.addChild(startOverlay);
+    function confirmExit() {
 
-    createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicOut).call(prepNewGame);
+      createjs.Ticker.setPaused(false);
 
-    function prepNewGame() {
-      rmAnim();
-      objectsInPlay = [];
-      newGameLabel.alpha = 0;
-      exitLabel.alpha = 0;
+      startOverlay.y = canvas.height;
+      loadIntro();
+      stage.addChild(startOverlay);
 
-      clearSequence();
+      createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicOut).call(prepNewGame);
 
+      function prepNewGame() {
+        rmAnim();
+        objectsInPlay = [];
+        newGameLabel.alpha = 0;
+        exitLabel.alpha = 0;
+
+        selectorsBox.mouseEnabled = true;
+        sequenceBox.mouseEnabled = true;
+        actionsBox.mouseEnabled = true;
+        newGameButton.mouseEnabled = true;
+        exitButton.mouseEnabled = true;
+
+        clearSequence();
+      }
     }
   }
 
@@ -1919,6 +1985,67 @@ function loadSelectors(set) {
     stage.update();
   }
 
+  function showOverlay(confirmText,confirmAction) {
+
+    createjs.Ticker.setPaused(false);
+
+    var darkOverlay = new createjs.Container().set({x:0,y:0});
+    var darkOverlayBG = new createjs.Shape();
+    darkOverlayBG.graphics.beginFill(black).drawRect(0,0,canvas.width,canvas.height);
+    darkOverlayBG.alpha = .95;
+
+    var confirm = new createjs.Shape().set({x:0,y:500});
+    confirm.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
+    confirm.alpha = 0.01;
+    confirm.addEventListener("mousedown",highlightConfirm);
+    confirm.addEventListener("pressup",confirmAction);
+
+    var confirmLabel = new createjs.Text(confirmText,"bold 100px Avenir-Heavy",white).set({x:centerX,y:600});
+    confirmLabel.textAlign = "center";
+
+    var cancel = new createjs.Shape().set({x:0,y:1200});
+    cancel.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
+    cancel.alpha = 0.01;
+    cancel.addEventListener("mousedown",highlightCancel);
+    cancel.addEventListener("pressup",cancelAction);
+
+    var cancelLabel = new createjs.Text("CANCEL","bold 100px Avenir-Heavy",white).set({x:centerX,y:1300});
+    cancelLabel.textAlign = "center";
+
+    darkOverlay.addChild(darkOverlayBG,confirm,cancel,confirmLabel,cancelLabel);
+    stage.addChild(darkOverlay);
+
+    darkOverlay.mouseEnabled = true;
+    selectorsBox.mouseEnabled = false;
+    sequenceBox.mouseEnabled = false;
+    actionsBox.mouseEnabled = false;
+    newGameButton.mouseEnabled = false;
+    exitButton.mouseEnabled = false;
+
+    createjs.Tween.get(darkOverlay, {override:true}).call(addAnim,[0]).to({alpha:.95}, 200, createjs.Ease.cubicOut).call(rmAnim);
+  
+    function highlightConfirm() {
+      confirmLabel.alpha = .5;
+      stage.update();
+    }
+
+    function highlightCancel() {
+      cancelLabel.alpha = .5;
+      stage.update();
+    }
+
+    function cancelAction() {
+      createjs.Ticker.setPaused(false);
+      createjs.Tween.get(darkOverlay, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicOut).call(rmAnim);
+      stage.removeChild(darkOverlay);
+      stage.update();
+      selectorsBox.mouseEnabled = true;
+      sequenceBox.mouseEnabled = true;
+      actionsBox.mouseEnabled = true;
+      newGameButton.mouseEnabled = true;
+      exitButton.mouseEnabled = true;
+    }
+  }
 
   // ---------- ACTION FUNCTIONS ------------------
 
@@ -2301,7 +2428,9 @@ function loadSelectors(set) {
       var showLogic = false;
       var triedAnd = false;
       var triedOr = false;
-      var madeShape = false;
+      var triedBoth = false;
+      var madeCircle = false;
+      var madeSquare = false;
 
       tutorialObjectsInPlay = [];
 
@@ -2347,16 +2476,27 @@ function loadSelectors(set) {
       learn.addEventListener("mousedown",highlightButton);
       learn.addEventListener("pressup",beginTutorial);
 
-      var start = new createjs.Container().set({x:centerX,y:1500});
+      var start = new createjs.Container().set({x:centerX,y:1450});
       var startButton = new createjs.Shape().set({x:-200,y:-60});
       startButton.graphics.beginFill(green).drawRect(0,0,400,200);
       startButton.alpha = 0.1;
-      var startText = new createjs.Text("START","bold 60px Avenir-Heavy",white).set({x:0,y:0});
+      var startText = new createjs.Text("PLAY","bold 60px Avenir-Heavy",white).set({x:0,y:0});
       startText.textAlign = "center";
 
       start.addChild(startButton,startText);
       start.addEventListener("mousedown",highlightButton);
       start.addEventListener("pressup",beginGame);
+
+      var next = new createjs.Container().set({x:centerX,y:1700});
+      var nextButton = new createjs.Shape().set({x:-200,y:-60});
+      nextButton.graphics.beginFill(green).drawRect(0,0,400,200);
+      nextButton.alpha = 0.1;
+      var nextText = new createjs.Text("NEXT","bold 60px Avenir-Heavy",white).set({x:0,y:0});
+      nextText.textAlign = "center";
+
+      next.addChild(nextButton,nextText);
+      next.addEventListener("mousedown",highlightButton);
+      next.addEventListener("pressup",showNext);
 
       var contact = new createjs.Container().set({x:centerX,y:1900});
       var contactButton = new createjs.Shape().set({x:-200,y:-60});
@@ -2366,13 +2506,13 @@ function loadSelectors(set) {
       contactText.textAlign = "center";
 
       contact.addChild(contactButton,contactText);
-      //contact.addEventListener("mousedown",highlightButton);
+      contact.addEventListener("mousedown",highlightButton);
       contact.addEventListener("click",contactMe);
 
       var tutorialGrid = new Grid(2,380,1000,230);
       tutorialGrid.alpha = 0;
 
-      startOverlay.addChild(startOverlayBG,tutorialGrid,logo,tagline,learn,start);
+      startOverlay.addChild(startOverlayBG,tutorialGrid,logo,tagline,learn,start,next);
 
       stage.addChild(startOverlay);
       stage.update();
@@ -2427,13 +2567,13 @@ function loadSelectors(set) {
       var seqBox = new createjs.Container().set({x:(canvas.width/2)+10,y:1125});
       seqBox.alpha = 0;
 
-      var sequenceTray = new createjs.Shape();
+      var sequenceTray = new createjs.Shape().set({x:0,y:-3});
       sequenceTray.graphics.beginStroke(green).setStrokeStyle(8).beginFill(black);
-      sequenceTray.graphics.drawRoundRect(0,0,442,154,5);
+      sequenceTray.graphics.drawRoundRect(0,0,442,160,5);
 
-      var actionTray = new createjs.Shape().set({x:0,y:0});
+      var actionTray = new createjs.Shape().set({x:0,y:-3});
       actionTray.graphics.beginStroke(yellow).setStrokeStyle(8).beginFill(black);
-      actionTray.graphics.drawRoundRect(0,0,160,154,5);
+      actionTray.graphics.drawRoundRect(0,0,160,160,5);
 
       var dropZoneContainer = new createjs.Container();
 
@@ -2445,19 +2585,26 @@ function loadSelectors(set) {
       dropZone0.graphics.beginFill(green);
       dropZone0.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
       dropZone0.alpha = .25;
+      dropZone0.type = "condition";
       dropZone0.slot = 0;
       dropZone1.graphics.beginFill(blue);
       dropZone1.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
       dropZone1.alpha = .25;
+      dropZone1.type = "logic";
       dropZone1.slot = 1;
       dropZone2.graphics.beginFill(green);
       dropZone2.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
       dropZone2.alpha = .25;
+      dropZone2.type = "condition";
       dropZone2.slot = 2;
       dropZone3.graphics.beginFill(yellow);
       dropZone3.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
       dropZone3.alpha = .25;
+      dropZone3.type = "action";
       dropZone3.slot = 3;
+
+      var required = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:55,y:30});
+      required.alpha = .1;
 
       dropZoneContainer.addChild(dropZone3);
 
@@ -2564,6 +2711,13 @@ function loadSelectors(set) {
       var placeholder10 = new PlaceholderButton(orLogic.x,orLogic.y);
       placeholder10.alpha = 0;
 
+      var andCheck = new createjs.Text("AND","bold 40px Avenir-Heavy",blue).set({x:centerX+80,y:(canvas.height - 220)});
+      andCheck.textAlign = "center";
+      andCheck.alpha = 0;
+      var orCheck = new createjs.Text("OR","bold 40px Avenir-Heavy",blue).set({x:centerX+80,y:(canvas.height - 140)});
+      orCheck.textAlign = "center";
+      orCheck.alpha = 0;
+
       tutorialConditions.addChild(placeholder5,placeholder6,placeholder7,placeholder8,placeholder9,placeholder10,rowSelector,colSelector,shapeSelector1,shapeSelector2,andLogic,orLogic);
 
       var arrow = new createjs.Shape().set({x:(canvas.width/2)-120,y:1170});
@@ -2572,6 +2726,28 @@ function loadSelectors(set) {
       arrow.graphics.lineTo(60,30);
       arrow.graphics.lineTo(0,60);
       arrow.alpha = 0;
+
+      var whiteCircle = new createjs.Shape().set({x:centerX+210,y:(canvas.height - 215)});
+      whiteCircle.graphics.beginFill(white).drawCircle(0,0,iconRadius,iconRadius);
+      whiteCircle.alpha = 0;
+
+      var whiteCheck = new createjs.Shape().set({x:centerX+290,y:(canvas.height - 255)});
+      whiteCheck.graphics.beginStroke(pink).setStrokeStyle(14,"round","round");
+      whiteCheck.graphics.moveTo(0,40);
+      whiteCheck.graphics.lineTo(20,55);
+      whiteCheck.graphics.lineTo(50,20);
+      whiteCheck.alpha = 0;
+
+      var blackSquare = new createjs.Shape().set({x:centerX+170,y:(canvas.height - 155)});
+      blackSquare.graphics.beginFill(black).drawRect(0,0,iconRadius*2,iconRadius*2);
+      blackSquare.alpha = 0;
+
+      var blackCheck = new createjs.Shape().set({x:centerX+290,y:(canvas.height - 155)});
+      blackCheck.graphics.beginStroke(pink).setStrokeStyle(14,"round","round");
+      blackCheck.graphics.moveTo(0,40);
+      blackCheck.graphics.lineTo(20,55);
+      blackCheck.graphics.lineTo(50,20);
+      blackCheck.alpha = 0;
 
       function beginTutorial(event) {
 
@@ -2595,7 +2771,7 @@ function loadSelectors(set) {
         createjs.Tween.get(D).wait(1000).to({x:colVal(0,2,380),y:rowVal(0,2,380,1000)-700}, 600, createjs.Ease.backInOut);
         createjs.Tween.get(U).wait(1200).to({x:colVal(1,2,380),y:rowVal(0,2,380,1000)-700}, 600, createjs.Ease.backInOut);
         createjs.Tween.get(A).wait(1400).to({x:colVal(0,2,380),y:rowVal(1,2,380,1000)-700}, 500, createjs.Ease.backOut);
-        createjs.Tween.get(L).wait(1600).to({x:colVal(1,2,380),y:rowVal(1,2,380,1000)-700}, 500, createjs.Ease.backOut).call(tutorialReady);
+        createjs.Tween.get(L).wait(1600).to({x:colVal(1,2,380),y:rowVal(1,2,380,1000)-700}, 500, createjs.Ease.getBackOut(1)).call(tutorialReady);
 
         function tutorialReady() {
 
@@ -2682,8 +2858,12 @@ function loadSelectors(set) {
       }
 
       createjs.Ticker.setPaused(false);
-
-      createjs.Tween.get(tutorialNextButton).call(addAnim,[0]).wait(200).to({alpha:0}, 100, createjs.Ease.cubicOut);
+      createjs.Tween.get(tutorialText1).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut);
+      createjs.Tween.get(whiteCircle).to({alpha:0}, 400, createjs.Ease.cubicOut);
+      createjs.Tween.get(blackSquare).to({alpha:0}, 400, createjs.Ease.cubicOut);
+      createjs.Tween.get(whiteCheck).to({alpha:.0}, 400, createjs.Ease.cubicOut);
+      createjs.Tween.get(blackCheck).to({alpha:.0}, 400, createjs.Ease.cubicOut);
+      createjs.Tween.get(tutorialNextButton).wait(200).to({alpha:0}, 100, createjs.Ease.cubicOut);
       createjs.Tween.get(tutorialNextLabel).wait(200).to({alpha:0}, 400, createjs.Ease.cubicOut);
       createjs.Tween.get(D).wait(200).to({alpha:0}, 200, createjs.Ease.cubicOut).call(manualTransforms).to({alpha:.2}, 400, createjs.Ease.cubicIn);
       createjs.Tween.get(U).wait(200).to({alpha:0}, 200, createjs.Ease.cubicOut).to({alpha:.2}, 600, createjs.Ease.cubicIn);
@@ -2723,12 +2903,18 @@ function loadSelectors(set) {
       }
 
       function loadConditions() {
+        startOverlay.removeChild(whiteCircle,blackSquare);
         dropZoneContainer.removeChild(dropZone3);
         switchTutorial.addChild(transformTL,transformTR,transformBR,transformBL);
         seqBox.removeChild(actionTray,playButton,playLabel);
-        dropZoneContainer.addChild(dropZone0,dropZone1,dropZone2);
+        dropZoneContainer.addChild(dropZone0,dropZone1,dropZone2,required);
         seqBox.addChild(sequenceTray,dropZoneContainer);
-        startOverlay.addChild(tutorialConditions);
+        startOverlay.addChild(tutorialConditions,andCheck,orCheck);
+
+        whiteCheck.x = centerX+170;
+        whiteCheck.y = canvas.height-240;
+        blackCheck.x = centerX+170;
+        blackCheck.y = canvas.height-160;
       }
 
     }
@@ -2755,10 +2941,18 @@ function loadSelectors(set) {
       createjs.Tween.get(andLogic).wait(400).to({alpha:1}, 400, createjs.Ease.cubicIn);
       createjs.Tween.get(orLogic).wait(400).to({alpha:1}, 400, createjs.Ease.cubicIn);
 
-      createjs.Tween.get(tutorialText2).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1550,"If you want to use two conditions you need to add one of these logic items. Try both out!"]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
-      tutorialNextLabel.text = "GO TO GAME"
-    }
+      createjs.Tween.get(tutorialText2).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1480,"You can use one condition or two. If you want to use two you need to add one of these logic items."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn);
+      createjs.Tween.get(tutorialText1).call(replaceText,[tutorialText1,centerX-120,1810,"Try both:"]).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn);
+      createjs.Tween.get(andCheck).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn);
+      createjs.Tween.get(orCheck).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn);
+      createjs.Tween.get(whiteCheck).wait(800).to({alpha:.05}, 400, createjs.Ease.cubicIn);
+      createjs.Tween.get(blackCheck).wait(800).to({alpha:.05}, 400, createjs.Ease.cubicIn).call(rmAnim);
 
+      tutorialNextLabel.text = "GO TO GAME"
+      tutorialNextButton.y = 1780;
+      tutorialNextLabel.y = 1790;
+
+    }
 
     function finishTutorial() {
 
@@ -2801,7 +2995,7 @@ function loadSelectors(set) {
         .clear()
         .beginFill(green).drawRect(0,0,400,100);
         tutorialNextButton.y = 680;
-        addButtonEvent(showControls);
+        addButtonEvent(showConditions);
         tutorialNextLabel.text = "NEXT";
         tutorialNextLabel.y = 690;
         tutorialNextLabel.color = black;
@@ -2813,30 +3007,18 @@ function loadSelectors(set) {
         createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:1}, 800, createjs.Ease.cubicIn);
         createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:1}, 800, createjs.Ease.cubicIn).call(rmAnim);
 
-        function showControls() {
-
-          tutorialNextButton.removeAllEventListeners();
-          createjs.Ticker.setPaused(false);
-
-          createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,550,"These are the game controls. Look familiar?"]).wait(400).to({alpha:1}, 200, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
-          createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(400).to({y:900},100).to({alpha:1}, 100, createjs.Ease.cubicIn);
-          createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,910,"NEXT"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[showConditions]).wait(0).call(rmAnim);
-          createjs.Tween.get(startOverlay, {override:true}).wait(400).to({y:-224}, 600, createjs.Ease.cubicIn);
-
-        }
-
         function showConditions() {
 
           tutorialNextButton.removeAllEventListeners();
           createjs.Ticker.setPaused(false);
 
-          createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,450,"A random set of conditions refreshes each turn. Use these to target shapes on the grid. Remember, if you use two conditions combine them with logic."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut);
-          
+          createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,500,"You\'ll get a random set of conditions to play with each turn. Use these to target shapes on the grid."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
+          createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(400).to({y:900},100).to({alpha:1}, 100, createjs.Ease.cubicIn);
+          createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,910,"NEXT"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[showSeq]).wait(0).call(rmAnim);
+          createjs.Tween.get(startOverlay, {override:true}).wait(400).to({y:-224}, 600, createjs.Ease.cubicIn);
+
           createjs.Tween.get(sequenceBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
           createjs.Tween.get(actionsBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-
-          createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(200).to({alpha:1}, 100, createjs.Ease.cubicIn).call(addButtonEvent,[showSeq]);
-          createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
 
         }
 
@@ -2861,7 +3043,7 @@ function loadSelectors(set) {
           tutorialNextButton.removeAllEventListeners();
           createjs.Ticker.setPaused(false);
 
-          createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,450,"As well as switching between round and square segments, you can flip and rotate whole shapes: with this power you can target many more shapes in a sequence."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut);
+          createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,450,"As well as switching between round and square segments, you can flip and rotate whole shapes. With this power you can target many more shapes in a sequence."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut);
           
           createjs.Tween.get(selectorsBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
           createjs.Tween.get(sequenceBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
@@ -2903,6 +3085,89 @@ function loadSelectors(set) {
       }
     }
 
+    function showNext() {
+
+      createjs.Ticker.setPaused(false);
+
+      next.alpha = 1;
+
+      var nextOverlay = new createjs.Container().set({x:0,y:canvas.height});
+
+      var nextOverlayBG = new createjs.Shape();
+      nextOverlayBG.graphics.beginFill(blue).drawRect(0,0,canvas.width,canvas.height);
+
+      var closeNext = new createjs.Container().set({x:centerX-60,y:100});
+      var closeNextButton = new createjs.Shape();
+      closeNextButton.graphics.beginFill(blue).drawRect(-25,-25,200,125);
+      var closeArrow = new createjs.Shape();
+      closeArrow.graphics.beginStroke(white).setStrokeStyle(20,"round", "round");
+      closeArrow.graphics.moveTo(0,60);
+      closeArrow.graphics.lineTo(60,0);
+      closeArrow.graphics.lineTo(120,60);
+      closeNext.addChild(closeNextButton,closeArrow);
+      closeNext.addEventListener("mousedown",highlightButton);
+      closeNext.addEventListener("pressup",nextToStart);
+
+
+      var nTitle = new createjs.Text("DUAL was designed to introduce some basic programming concepts.","400 60px Avenir-Book", white).set({x:centerX,y:250});
+      nTitle.lineWidth = 1200;
+      nTitle.textAlign = "center";
+
+      var nSubTitle = new createjs.Text("All computer programs are built from three simple structures: loop, selection and sequence (and now you know about them all).","200 40px Avenir-Medium", white).set({x:centerX,y:450});
+      nSubTitle.lineWidth = 1200;
+      nSubTitle.lineHeight = 55;
+      nSubTitle.textAlign = "center";
+
+      var nLoop = new createjs.Text("LOOP","200 60px Avenir-Medium", white).set({x:170,y:650});
+      nLoop.textAlign = "left";
+
+      var nLoopText = new createjs.Text("When you hit play, the program loops through every shape on the grid: first to check if each shape meets your set of conditions and then to perform each action in your sequence.","200 40px Avenir-Medium", white).set({x:650,y:650});
+      nLoopText.lineWidth = 700;
+      nLoopText.lineHeight = 55;
+      nLoopText.textAlign = "left";
+
+      var nSelection = new createjs.Text("SELECTION","200 60px Avenir-Medium", white).set({x:170,y:1000});
+      nSelection.textAlign = "left";
+
+      var nSelectionText = new createjs.Text("When you use conditions you\'re testing to see if shapes return TRUE or FALSE. In code these are called conditional statements. You also learned about logical operators: when you use AND a program returns true if both conditions are met. OR returns true if either condition is met.","200 40px Avenir-Medium", white).set({x:650,y:1000});
+      nSelectionText.lineWidth = 700;
+      nSelectionText.lineHeight = 55;
+      nSelectionText.textAlign = "left";
+
+      var nSequence = new createjs.Text("SEQUENCE","200 60px Avenir-Medium", white).set({x:170,y:1500});
+      nSequence.textAlign = "left";
+
+      var nSeqText = new createjs.Text("A program reads code in sequential order, responding to changing states as it goes along. This is exactly how your sequences work each turn.","200 40px Avenir-Medium", white).set({x:650,y:1500});
+      nSeqText.lineWidth = 700;
+      nSeqText.lineHeight = 55;
+      nSeqText.textAlign = "left";
+
+      var nConclusion = new createjs.Text("If you enjoy playing DUAL you might like to learn more about programming.","200 40px Avenir-Medium", white).set({x:centerX,y:1800});
+      nConclusion.lineWidth = 800;
+      nConclusion.lineHeight = 55;
+      nConclusion.textAlign = "center";
+
+      nextOverlay.addChild(nextOverlayBG,closeNext,nTitle,nSubTitle,nLoop,nLoopText,nSelection,nSelectionText,nSequence,nSeqText,nConclusion);
+      stage.addChild(nextOverlay);
+
+      createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:-canvas.height}, 600, createjs.Ease.cubicIn);
+      createjs.Tween.get(nextOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn).call(rmAnim);
+
+
+      function nextToStart() {
+
+        createjs.Ticker.setPaused(false);
+        createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicIn);
+        createjs.Tween.get(nextOverlay, {override:true}).to({y:canvas.height}, 600, createjs.Ease.cubicIn).call(cleanNext);
+
+        function cleanNext() {
+          rmAnim();
+          nextOverlay.removeAllChildren();
+          stage.removeChild(nextOverlay);
+        }
+      }
+    }
+
     // INTERACTION
 
     function grabItemLearn(event) {
@@ -2924,12 +3189,12 @@ function loadSelectors(set) {
       // slot highlighting
 
       if (event.currentTarget.type == "logic") {
-          dropZone1.alpha = .5;
+          dropZone1.alpha = .7;
       } else if (event.currentTarget.type == "action") {
-          dropZone3.alpha = .5;
+          dropZone3.alpha = .7;
       } else {
-          dropZone0.alpha = .5;
-          dropZone2.alpha = .5; 
+          dropZone0.alpha = .7;
+          dropZone2.alpha = .7; 
       }
       stage.update();
     }
@@ -2950,9 +3215,12 @@ function loadSelectors(set) {
 
       if (dropPosition != null && sequence[dropPosition.slot] == null) {
         addToSlotLearn(event.currentTarget,dropPosition);
+      } else if (dropPosition != null && sequence[dropPosition.slot] != null && (event.currentTarget.slotType == dropPosition.type)) {
+        returnToOriginLearn(sequence[dropPosition.slot],sequence[dropPosition.slot].originParent,sequence[dropPosition.slot].originX,sequence[dropPosition.slot].originY);
+        addToSlotLearn(event.currentTarget,dropPosition);
       } else {
         returnToOriginLearn(event.currentTarget,event.currentTarget.originParent,event.currentTarget.originX,event.currentTarget.originY);
-      } 
+      }
 
       // unhighlight slots
 
@@ -2995,21 +3263,39 @@ function loadSelectors(set) {
           targetGameObjectsLearn();
 
           if (item.name == "AND") {
-            triedAnd = true;
+            if (triedAnd == false) {
+              triedAnd = true;
+              createjs.Ticker.setPaused(false);
+              createjs.Tween.get(whiteCheck).call(addAnim,[0]).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+            }
           } else {
-            triedOr = true;
+            if (triedOr == false) {
+              triedOr = true;
+              createjs.Ticker.setPaused(false);
+              createjs.Tween.get(blackCheck).call(addAnim,[0]).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+            }
           }
 
           if (triedOr && triedAnd) {
-            
-            createjs.Ticker.setPaused(false);
-            createjs.Tween.get(tutorialText2).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1520,"Using AND targets any shapes that match both conditions. Using OR targets shapes that match either condition."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
-            createjs.Tween.get(tutorialNextButton).call(addAnim,[0]).wait(800).to({alpha:1}, 100, createjs.Ease.cubicOut).call(rmAnim);
-            createjs.Tween.get(tutorialNextLabel).call(addAnim,[0]).wait(800).to({alpha:1}, 400, createjs.Ease.cubicOut).call(rmAnim);
-            
-            addButtonEvent(finishTutorial);
-          }
+            if (triedBoth == false) {
+              triedBoth = true;
+              createjs.Ticker.setPaused(false);
+              createjs.Tween.get(tutorialText2).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1480,"Using AND targets any shapes that match both conditions. Using OR targets shapes that match either condition."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn).call(handleGoToGame);
+              
+              function handleGoToGame() {
+                createjs.Tween.get(tutorialText1).wait(600).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(rmAnim);;
+                createjs.Tween.get(andCheck).wait(600).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(rmAnim);;
+                createjs.Tween.get(orCheck).wait(600).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(rmAnim);;
+                createjs.Tween.get(whiteCheck).wait(600).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(rmAnim);;
+                createjs.Tween.get(blackCheck).wait(600).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(rmAnim);;
+                createjs.Tween.get(tutorialNextButton).call(addAnim,[0]).wait(1400).to({alpha:1}, 100, createjs.Ease.cubicOut).call(rmAnim);
+                createjs.Tween.get(tutorialNextLabel).call(addAnim,[0]).wait(1400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(rmAnim);
+                
+                addButtonEvent(finishTutorial);
 
+              }
+            }
+          }
         } else { 
           returnToOriginLearn(item,item.originParent,item.originX,item.originY); 
         }
@@ -3146,15 +3432,15 @@ function loadSelectors(set) {
       actionTray.graphics
       .clear()
       .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-      .drawRoundRect(0,0,160,154,5);
+      .drawRoundRect(0,0,160,160,5);
 
 
       for (i in tutorialObjectsInPlay) {
 
         if (tutorialObjectsInPlay[i].tl == 0 && tutorialObjectsInPlay[i].tr == 0 && tutorialObjectsInPlay[i].br == 0 && tutorialObjectsInPlay[i].bl == 0) {
-          madeShape = true;
+          madeSquare = true;
         } else if (tutorialObjectsInPlay[i].tl == 1 && tutorialObjectsInPlay[i].tr == 1 && tutorialObjectsInPlay[i].br == 1 && tutorialObjectsInPlay[i].bl == 1) {
-          madeShape = true;
+          madeCircle = true;
         }
 
         var findMorph = tutorialObjectsInPlay[i].getChildByName("morph");
@@ -3165,21 +3451,49 @@ function loadSelectors(set) {
         }
 
       if (switchCount == 1) { 
+
+        startOverlay.addChild(whiteCircle,whiteCheck,blackSquare,blackCheck);
+
         createjs.Ticker.setPaused(false);
-        createjs.Tween.get(tutorialText2).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1520,"Player one's goal is to make complete circles. Player two's goal is to make complete squares. Try making either."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+        createjs.Tween.get(tutorialText2).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1470,"Player one's goal is to make complete circles. Player two's goal is to make complete squares."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn);
+        createjs.Tween.get(tutorialText1).call(replaceText,[tutorialText1,centerX-100,1800,"Try making both:"]).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn);
+        createjs.Tween.get(whiteCircle).wait(1000).to({alpha:1}, 400, createjs.Ease.cubicIn);
+        createjs.Tween.get(blackSquare).wait(1000).to({alpha:1}, 400, createjs.Ease.cubicIn);
+        createjs.Tween.get(whiteCheck).wait(1200).to({alpha:.05}, 400, createjs.Ease.cubicIn);
+        if (madeSquare == true) {
+          createjs.Tween.get(blackCheck).wait(1200).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+        } else {
+          createjs.Tween.get(blackCheck).wait(1200).to({alpha:.05}, 400, createjs.Ease.cubicIn).call(rmAnim);
+        }
       }
 
-      if (switchCount >= 2 && madeShape == true) { 
+      if (switchCount >= 2 && madeSquare == true && madeCircle == false) { 
+        createjs.Ticker.setPaused(false);
+        createjs.Tween.get(blackCheck).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+      }
 
-      addButtonEvent(tryConditions);
+      if (switchCount >= 2 && madeSquare == false && madeCircle == true) { 
+        createjs.Ticker.setPaused(false);
+        createjs.Tween.get(whiteCheck).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+      }
 
-      tutorialNextButton.y = 1810;
-      tutorialNextLabel.y = 1820;
-      tutorialNextLabel.text = "GOT IT!";
+      if (switchCount >= 2 && madeSquare == true && madeCircle == true) { 
 
-      createjs.Ticker.setPaused(false);
-      createjs.Tween.get(tutorialNextButton).call(addAnim,[0]).wait(600).to({alpha:1}, 100, createjs.Ease.cubicIn).call(rmAnim);
-      createjs.Tween.get(tutorialNextLabel).call(addAnim,[0]).wait(600).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+        addButtonEvent(tryConditions);
+
+        tutorialNextButton.y = 1810;
+        tutorialNextLabel.y = 1820;
+        tutorialNextLabel.text = "GOT IT";
+
+        createjs.Ticker.setPaused(false);
+        createjs.Tween.get(tutorialText2).call(addAnim,[0]).to({alpha:0}, 100, createjs.Ease.cubicOut);
+        createjs.Tween.get(tutorialText1).to({y:tutorialText1.y-210},400, createjs.Ease.cubicInOut);
+        createjs.Tween.get(whiteCircle).to({y:whiteCircle.y-210},400, createjs.Ease.cubicInOut);
+        createjs.Tween.get(whiteCheck).to({y:whiteCheck.y-210},400, createjs.Ease.cubicInOut).to({alpha:1}, 400, createjs.Ease.cubicIn);
+        createjs.Tween.get(blackSquare).to({y:blackSquare.y-210},400, createjs.Ease.cubicInOut);
+        createjs.Tween.get(blackCheck).to({y:blackCheck.y-210},400, createjs.Ease.cubicInOut).to({alpha:1}, 400, createjs.Ease.cubicIn);
+        createjs.Tween.get(tutorialNextButton).wait(600).to({alpha:1}, 100, createjs.Ease.cubicIn);
+        createjs.Tween.get(tutorialNextLabel).wait(600).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
     }
 
       sequenceReadyLearn();
@@ -3226,7 +3540,7 @@ function loadSelectors(set) {
     actionTray.graphics
     .clear()
     .beginStroke(black).setStrokeStyle(8).beginFill(black)
-    .drawRoundRect(0,0,160,154,5);
+    .drawRoundRect(0,0,160,160,5);
     stage.update();
 
   }
@@ -3261,7 +3575,7 @@ function loadSelectors(set) {
     function contactMe() {
       contactText.alpha = 1;
       stage.update();
-      window.location = "mailto:hello@samwander.com";
+      //window.location = "mailto:hello@samwander.com";
     }
 
     // BEGIN GAME
@@ -3295,6 +3609,7 @@ function loadSelectors(set) {
 
   // ------------- ANIMATION -----------------
 
+  var endTweenCheck = 0;
 
   function addAnim(t) {
     animations.push(t);
@@ -3313,20 +3628,16 @@ function loadSelectors(set) {
 
   function endTween() {
     if (animations.length < 1) {
+      endTweenCheck++;
+      if (endTweenCheck < 2) {
+      window.setTimeout(endTween,500);
+      } else {
       createjs.Ticker.setPaused(true);
       console.log("ticker paused");
+      endTweenCheck = 0;
+      }
     }
   }
-  /*
-  function endTween(speed) {
-    if (arguments.length == 1) {
-      window.setTimeout(function() {    createjs.Ticker.setPaused(true);
-      console.log("ticker paused");},speed);
-    } else {
-      window.setTimeout(function() {    createjs.Ticker.setPaused(true);
-      console.log("ticker paused");},1000);
-    }
-  }*/
 
   // ------------- UTILITIES -----------------
 

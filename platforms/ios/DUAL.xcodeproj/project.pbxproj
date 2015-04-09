@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		1D3623260D0F684500981E51 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* AppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
@@ -30,6 +29,7 @@
 		CC6117539C8B47F1853EFC4D /* MyMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 94414AC1879A4C03865F9C52 /* MyMainViewController.m */; };
 		CF0832A723244B14BBA30246 /* GCDWebServer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AB38A7B9301C40E7816BE936 /* GCDWebServer.framework */; };
 		E7979328134B4A43BF87BFE9 /* CDVWebViewUIDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 6877ED9FA12D405682AB70FE /* CDVWebViewUIDelegate.m */; };
+		C27061DDA616494E93692492 /* CDVInAppBrowser.m in Sources */ = {isa = PBXBuildFile; fileRef = 291E04A8D7CA4BFBB3683D96 /* CDVInAppBrowser.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,6 +85,8 @@
 		EB87FDF41871DAF40020F90C /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = ../../config.xml; sourceTree = "<group>"; };
 		F43DA7D8178149EAAFEB48FB /* ReroutingUIWebView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReroutingUIWebView.h; path = com.telerik.plugins.wkwebview/ReroutingUIWebView.h; sourceTree = "<group>"; };
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = DUAL/config.xml; sourceTree = "<group>"; };
+		291E04A8D7CA4BFBB3683D96 /* CDVInAppBrowser.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVInAppBrowser.m"; path = "org.apache.cordova.inappbrowser/CDVInAppBrowser.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		4302147B07A845EDAF0537D4 /* CDVInAppBrowser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVInAppBrowser.h"; path = "org.apache.cordova.inappbrowser/CDVInAppBrowser.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -197,6 +199,8 @@
 				F43DA7D8178149EAAFEB48FB /* ReroutingUIWebView.h */,
 				467B24CDFFF14C078847C2AA /* CDVWebViewOperationsDelegate.h */,
 				E877601198094DB095D85FD5 /* CDVWebViewUIDelegate.h */,
+				291E04A8D7CA4BFBB3683D96 /* CDVInAppBrowser.m */,
+				4302147B07A845EDAF0537D4 /* CDVInAppBrowser.h */,
 			);
 			name = Plugins;
 			path = DUAL/Plugins;
@@ -349,6 +353,7 @@
 				883F15C2B0B34BA580165923 /* ReroutingUIWebView.m in Sources */,
 				9A6BA875D58F4517A49C6B82 /* CDVWebViewOperationsDelegate.m in Sources */,
 				E7979328134B4A43BF87BFE9 /* CDVWebViewUIDelegate.m in Sources */,
+				C27061DDA616494E93692492 /* CDVInAppBrowser.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

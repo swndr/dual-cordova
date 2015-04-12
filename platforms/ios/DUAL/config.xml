@@ -19,13 +19,14 @@
     </feature>
     <name>DUAL</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        DUAL is a game about computation.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="hello@samwander.com" href="http://www.samwander.com">
+        Sam Wander
     </author>
     <content src="index.html" />
-    <access origin="*" />
+   <!--  <access origin="*" /> -->
+    <access origin="*.playdual.*" />
     <feature name="InAppBrowser">
         <param name="ios-package" value="CDVInAppBrowser" />
     </feature>

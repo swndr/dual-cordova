@@ -1,14 +1,4 @@
 
-/*@font-face {
-font-family: Avenir;
-src: url("fonts/Avenir-Medium.otf") format("opentype");
-}
-
-@font-face {
-font-family: AvenirHeavy;
-src: url("fonts/Avenir-Heavy.otf") format("opentype");
-}*/
-
 html, body {
 	background: 444;
   margin: 0;
@@ -18,7 +8,19 @@ html, body {
 canvas {
 	background: #EAEAEA;
 	display: block;
+  position: relative;
 	margin: 20px auto 0 auto;
   width: 768px;
   height: 1004px;
+  z-index: 1;
+}
+
+#link {
+  display: none;
+  position: absolute;
+  width: 400px;
+  height: 120px;
+  bottom: 0px;
+  left: 184px;
+  z-index: 100;
 }

@@ -2971,10 +2971,6 @@ function generateConditions(set,p) {
     next.addEventListener("pressup",showNext);
     next.alpha = 1;
 
-    contact.addEventListener("mousedown",highlightButton);
-    contact.addEventListener("click",contactMe);
-    contact.alpha = 1;
-
     seqBox.x = (canvas.width/2)+10;
     seqBox.y = 1125;
     arrow.x = (canvas.width/2)-120;
@@ -3439,7 +3435,6 @@ function generateConditions(set,p) {
           startOverlayBG.graphics
           .clear()
           .beginFill(green).drawRect(0,0,canvas.width,canvas.height);
-          popSelectorsP2();
         }
       }
     }
@@ -3471,6 +3466,12 @@ function generateConditions(set,p) {
     function nextToStart() {
 
       document.getElementById("link").style.display="none";
+
+      learn.addEventListener("mousedown",highlightButton);
+      learn.addEventListener("pressup",beginTutorial);
+
+      start.addEventListener("mousedown",highlightButton);
+      start.addEventListener("pressup",beginGame);
 
       next.addEventListener("mousedown",highlightButton);
       next.addEventListener("pressup",showNext);
@@ -3620,7 +3621,7 @@ function generateConditions(set,p) {
         returnToOriginLearn(item,item.originParent,item.originX,item.originY); 
       }
 
-    } else {
+    } else if (item.type == "action") {
 
       if (pos.slot == 3) { 
         seqBox.addChild(item);
@@ -3892,12 +3893,6 @@ function playLearnAction() {
     } else {
       window.setTimeout(returnToStart,500);
     }
-  }
-
-  function contactMe() {
-    contactText.alpha = 1;
-    stage.update();
-    //window.location = "mailto:hello@samwander.com";
   }
 
   // BEGIN GAME

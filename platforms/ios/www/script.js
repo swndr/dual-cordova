@@ -114,23 +114,14 @@ function onDeviceReady() {
 
   // GAME MGMT & SCORES
 
-  var newGameButton = new createjs.Shape().set({x:40,y:40});
-  newGameButton.graphics.beginFill("#AAA5A5").drawRect(0,0,300,100);
-  newGameButton.addEventListener("mousedown",newGameHighlight);
-  newGameButton.addEventListener("pressup",newGame);
-  newGameButton.name = "new";
-  var newGameLabel = new createjs.Text("RESTART", mediumLabelStyle, white).set({x:185,y:70});
-  newGameLabel.textAlign = "center";
-  newGameLabel.alpha = 0;
-
-  var exitButton = new createjs.Shape().set({x:canvas.width-330,y:40});
-  exitButton.graphics.beginFill("#AAA5A5").drawRect(0,0,260,100);
-  exitButton.addEventListener("mousedown",exitHighlight);
-  exitButton.addEventListener("pressup",exit);
-  exitButton.name = "exit";
-  var exitLabel = new createjs.Text("EXIT", mediumLabelStyle, white).set({x:canvas.width-200,y:70});
-  exitLabel.textAlign = "center";
-  exitLabel.alpha = 0;
+  var menuButton = new createjs.Shape().set({x:40,y:40});
+  menuButton.graphics.beginFill("#AAA5A5").drawRect(0,0,300,100);
+  menuButton.addEventListener("mousedown",menuHighlight);
+  menuButton.addEventListener("pressup",showMenu);
+  menuButton.name = "new";
+  var menuLabel = new createjs.Text("MENU", mediumLabelStyle, white).set({x:185,y:70});
+  menuLabel.textAlign = "center";
+  menuLabel.alpha = 0;
 
   var whiteTurn = new createjs.Shape().set({x:0,y:(445-iconRadius)});
   whiteTurn.graphics.beginFill(pink).drawRect(0,0,25,iconRadius*2);
@@ -148,7 +139,7 @@ function onDeviceReady() {
   var blackScore = new createjs.Text(bScore, largeLabelStyle, black).set({x:(canvas.width - 160),y:425});
   blackScore.textAlign = "right";
 
-  board.addChild(newGameButton,newGameLabel,exitButton,exitLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
+    board.addChild(menuButton,menuLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
 
   // PLAYER CONTROLS
 
@@ -1396,10 +1387,8 @@ function generateConditions(set,p) {
     playButton.removeAllEventListeners();
     clearLabel.alpha = .5;
     clearButton.removeAllEventListeners();
-    newGameLabel.alpha= .5;
-    newGameButton.removeAllEventListeners();
-    exitLabel.alpha = .5;
-    exitButton.removeAllEventListeners();
+    menuLabel.alpha= .5;
+    menuButton.removeAllEventListeners();
 
     if (wTurn == true) { wTurns++; } else { bTurns++; }
 
@@ -1750,12 +1739,9 @@ function generateConditions(set,p) {
       winSound.play({ numberOfLoops: "infinite" });
     }
 
-    newGameLabel.alpha= 1;
-    newGameButton.addEventListener("mousedown",newGameHighlight);
-    newGameButton.addEventListener("pressup",newGame);
-    exitLabel.alpha = 1;
-    exitButton.addEventListener("mousedown",exitHighlight);
-    exitButton.addEventListener("pressup",exit);
+    menuLabel.alpha= 1;
+    menuButton.addEventListener("mousedown",menuHighlight);
+    menuButton.addEventListener("pressup",showMenu);
 
     clearSequence();
 
@@ -1795,7 +1781,7 @@ function generateConditions(set,p) {
     var newGameBanner = new createjs.Shape().set({x:0,y:920});
     newGameBanner.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,200);
     newGameBanner.addEventListener("mousedown",newGameBannerHighlight);
-    newGameBanner.addEventListener("pressup",newGame);
+    newGameBanner.addEventListener("pressup",confirmNewGame);
 
     var newGameBannerText = new createjs.Text("NEW GAME","bold 80px Avenir-Heavy",green).set({x:centerX,y:960});
     newGameBannerText.textAlign = "center";
@@ -1847,12 +1833,9 @@ function generateConditions(set,p) {
     clearLabel.alpha = 1;
     clearButton.addEventListener("mousedown",clearHighlight);
     clearButton.addEventListener("pressup",clearSequence);
-    newGameLabel.alpha= 1;
-    newGameButton.addEventListener("mousedown",newGameHighlight);
-    newGameButton.addEventListener("pressup",newGame);
-    exitLabel.alpha = 1;
-    exitButton.addEventListener("mousedown",exitHighlight);
-    exitButton.addEventListener("pressup",exit);
+    menuLabel.alpha= 1;
+    menuButton.addEventListener("mousedown",menuHighlight);
+    menuButton.addEventListener("pressup",showMenu);
 
     createjs.Ticker.setPaused(false);
 
@@ -1985,50 +1968,109 @@ function generateConditions(set,p) {
     stage.update();
   }
 
-  function newGame(event) {
+  function showMenu(event) {
 
-    newGameLabel.alpha = 1;
+    menuLabel.alpha = 1;
+    showOverlay();
 
-    if (event.currentTarget.name == "new") {
-      showOverlay("NEW GAME",confirmNewGame);
-    } else {
-      confirmNewGame();
+  }
+
+  function confirmNewGame() {
+
+    restart.removeAllEventListeners();
+    quit.removeAllEventListeners();
+    soundOption.removeAllEventListeners();
+    cancel.removeAllEventListeners();
+
+    darkOverlay.visible = false;
+
+    if (winOverlay.visible == true) {
+      createjs.Ticker.setPaused(false);
+      createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicInOut);
+      createjs.Tween.get(winOverlay, {override:true}).to({y:canvas.height}, 300, createjs.Ease.cubicInOut).call(rmAnim);
     }
 
-    function confirmNewGame() {
+    for (i in objectsInPlay) {
+      objectsInPlay[i] = null;
+    }
 
-      if (soundOn == true) { 
-        winSound.stop(); 
-        gameSound.play({ numberOfLoops: "infinite" });
+    objectsInPlay = [];
+
+    for (var i = 0; i < 10; i++) {
+      selectorsP1[i] = null;
+      selectorsP2[i] = null;
+    }
+
+    selectorsBox.mouseEnabled = true;
+    sequenceBox.mouseEnabled = true;
+    actionsBox.mouseEnabled = true;
+    menuButton.mouseEnabled = true;
+
+    clearSequence();
+
+    var toClear = [];
+
+    for (var i = 0; i < selectorsBox.children.length; i++) {
+      if (selectorsBox.children[i].slotType != null) {
+        if (selectorsBox.children[i].slotType == "condition") {
+        toClear.push(selectorsBox.children[i]);
+        }
       }
+    }
 
-      confirm.removeAllEventListeners();
-      cancel.removeAllEventListeners();
+    for (var i = 0; i < toClear.length; i++) {
+      selectorsBox.removeChild(toClear[i]);
+    }
 
-      darkOverlay.visible = false;
+    winOverlay.visible = false;
+    winGrid.visible = false;
 
-      if (winOverlay.visible == true) {
-        createjs.Ticker.setPaused(false);
-        createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicInOut);
-        createjs.Tween.get(winOverlay, {override:true}).to({y:canvas.height}, 300, createjs.Ease.cubicInOut).call(rmAnim);
-      }
+    loadGame();
+    stage.update();
+
+    loadSelectors(selectorsP1);
+  }
+
+  function menuHighlight() {
+    menuLabel.alpha = .5;
+    stage.update();
+  }
+
+  function confirmExit() {
+
+    restart.removeAllEventListeners();
+    quit.removeAllEventListeners();
+    soundOption.removeAllEventListeners();
+    cancel.removeAllEventListeners();
+
+    darkOverlay.visible = false;
+    startOverlay.visible = true;
+
+    createjs.Ticker.setPaused(false);
+
+    startOverlay.y = canvas.height;
+    loadIntro();
+    startOverlay.cache(0,0,canvas.width,canvas.height);
+
+    createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicOut).call(prepNewGame);
+
+    function prepNewGame() {
+      rmAnim();
+      startOverlay.uncache();
 
       for (i in objectsInPlay) {
         objectsInPlay[i] = null;
       }
 
       objectsInPlay = [];
+      menuLabel.alpha = 0;
 
-      for (var i = 0; i < 10; i++) {
-        selectorsP1[i] = null;
-        selectorsP2[i] = null;
-      }
-
-      selectorsBox.mouseEnabled = true;
-      sequenceBox.mouseEnabled = true;
-      actionsBox.mouseEnabled = true;
-      newGameButton.mouseEnabled = true;
-      exitButton.mouseEnabled = true;
+      board.visible = false;
+      sequenceBox.visible = false;
+      selectorsBox.visible = false;
+      actionsBox.visible = false;
+      gameObjects.visible = false;
+      darkOverlay.visible = false;
 
       clearSequence();
 
@@ -2046,85 +2088,7 @@ function generateConditions(set,p) {
         selectorsBox.removeChild(toClear[i]);
       }
 
-      winOverlay.visible = false;
-      winGrid.visible = false;
-
-      loadGame();
-      stage.update();
-
-      loadSelectors(selectorsP1);
     }
-  }
-
-  function newGameHighlight() {
-    newGameLabel.alpha = .5;
-    stage.update();
-  }
-
-  function exit() {
-
-    exitLabel.alpha = 1;
-
-    showOverlay("QUIT GAME",confirmExit);
-
-    function confirmExit() {
-
-      confirm.removeAllEventListeners();
-      cancel.removeAllEventListeners();
-
-      darkOverlay.visible = false;
-      startOverlay.visible = true;
-
-      createjs.Ticker.setPaused(false);
-
-      startOverlay.y = canvas.height;
-      loadIntro();
-      startOverlay.cache(0,0,canvas.width,canvas.height);
-
-      createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicOut).call(prepNewGame);
-
-      function prepNewGame() {
-        rmAnim();
-        startOverlay.uncache();
-
-        for (i in objectsInPlay) {
-          objectsInPlay[i] = null;
-        }
-
-        objectsInPlay = [];
-        newGameLabel.alpha = 0;
-        exitLabel.alpha = 0;
-
-        board.visible = false;
-        sequenceBox.visible = false;
-        selectorsBox.visible = false;
-        actionsBox.visible = false;
-        gameObjects.visible = false;
-        darkOverlay.visible = false;
-
-        clearSequence();
-
-        var toClear = [];
-
-        for (var i = 0; i < selectorsBox.children.length; i++) {
-          if (selectorsBox.children[i].slotType != null) {
-            if (selectorsBox.children[i].slotType == "condition") {
-            toClear.push(selectorsBox.children[i]);
-            }
-          }
-        }
-
-        for (var i = 0; i < toClear.length; i++) {
-          selectorsBox.removeChild(toClear[i]);
-        }
-
-      }
-    }
-  }
-
-  function exitHighlight() {
-    exitLabel.alpha = .5;
-    stage.update();
   }
 
   // SHOW OVERLAY
@@ -2133,34 +2097,61 @@ function generateConditions(set,p) {
   darkOverlayBG.graphics.beginFill(black).drawRect(0,0,canvas.width,canvas.height);
   darkOverlayBG.alpha = .95;
 
-  var confirm = new createjs.Shape().set({x:0,y:500});
-  confirm.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
-  confirm.alpha = 0.01;
+  var restart = new createjs.Shape().set({x:0,y:400});
+  restart.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
+  restart.alpha = 0.01;
 
-  var confirmLabel = new createjs.Text("","bold 100px Avenir-Heavy",white).set({x:centerX,y:600});
-  confirmLabel.textAlign = "center";
+  var restartLabel = new createjs.Text("RESTART","bold 100px Avenir-Heavy",white).set({x:centerX,y:500});
+  restartLabel.textAlign = "center";
 
-  var cancel = new createjs.Shape().set({x:0,y:1200});
+  var quit = new createjs.Shape().set({x:0,y:700});
+  quit.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
+  quit.alpha = 0.01;
+
+  var quitLabel = new createjs.Text("QUIT","bold 100px Avenir-Heavy",white).set({x:centerX,y:800});
+  quitLabel.textAlign = "center";
+
+  var soundOption = new createjs.Shape().set({x:0,y:1000});
+  soundOption.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
+  soundOption.name = "inGame";
+  soundOption.alpha = 0.01;
+
+  var soundLabel = new createjs.Text("","bold 100px Avenir-Heavy",white).set({x:centerX,y:1100});
+  soundLabel.textAlign = "center";
+
+  if (soundOn == true) {
+    soundLabel.text = "MUTE";
+  } else {
+    soundLabel.text = "SOUND";
+  }
+
+  var cancel = new createjs.Shape().set({x:0,y:1300});
   cancel.graphics.beginFill(black).drawRect(0,0,canvas.width,300);
   cancel.alpha = 0.01;
 
-  var cancelLabel = new createjs.Text("CANCEL","bold 100px Avenir-Heavy",white).set({x:centerX,y:1300});
+  var cancelLabel = new createjs.Text("CANCEL","bold 100px Avenir-Heavy",white).set({x:centerX,y:1400});
   cancelLabel.textAlign = "center";
 
-  darkOverlay.addChild(darkOverlayBG,confirm,cancel,confirmLabel,cancelLabel);
+  darkOverlay.addChild(darkOverlayBG,restart,quit,soundOption,cancel,restartLabel,quitLabel,soundLabel,cancelLabel);
   stage.addChild(darkOverlay);
 
-  function showOverlay(confirmText,confirmAction) {
+  function showOverlay() {
 
     createjs.Ticker.setPaused(false);
 
     darkOverlay.visible = true;
 
-    confirm.addEventListener("mousedown",highlightConfirm);
-    confirm.addEventListener("pressup",confirmAction);
+    restart.addEventListener("mousedown",highlightRestart);
+    restart.addEventListener("pressup",confirmNewGame);
+    restartLabel.alpha = 1;
 
-    confirmLabel.text = confirmText;
-    confirmLabel.alpha = 1;
+    quit.addEventListener("mousedown",highlightQuit);
+    quit.addEventListener("pressup",confirmExit);
+    quitLabel.alpha = 1;
+
+    soundOption.addEventListener("mousedown",highlightSound);
+    soundOption.addEventListener("pressup",toggleSound);
+    soundLabel.alpha = 1;
 
     cancel.addEventListener("mousedown",highlightCancel);
     cancel.addEventListener("pressup",cancelAction);
@@ -2170,13 +2161,22 @@ function generateConditions(set,p) {
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
     actionsBox.mouseEnabled = false;
-    newGameButton.mouseEnabled = false;
-    exitButton.mouseEnabled = false;
+    menuButton.mouseEnabled = false;
 
     createjs.Tween.get(darkOverlay, {override:true}).call(addAnim,[0]).to({alpha:.95}, 200, createjs.Ease.cubicOut).call(rmAnim);
   
-    function highlightConfirm() {
-      confirmLabel.alpha = .5;
+    function highlightRestart() {
+      restartLabel.alpha = .5;
+      stage.update();
+    }
+
+    function highlightQuit() {
+      quitLabel.alpha = .5;
+      stage.update();
+    }
+
+    function highlightSound() {
+      soundLabel.alpha = .5;
       stage.update();
     }
 
@@ -2187,7 +2187,9 @@ function generateConditions(set,p) {
 
     function cancelAction() {
 
-      confirm.removeAllEventListeners();
+      restart.removeAllEventListeners();
+      quit.removeAllEventListeners();
+      soundOption.removeAllEventListeners();
       cancel.removeAllEventListeners();
 
       createjs.Ticker.setPaused(false);
@@ -2197,8 +2199,7 @@ function generateConditions(set,p) {
       selectorsBox.mouseEnabled = true;
       sequenceBox.mouseEnabled = true;
       actionsBox.mouseEnabled = true;
-      newGameButton.mouseEnabled = true;
-      exitButton.mouseEnabled = true;
+      menuButton.mouseEnabled = true;
     }
   }
 
@@ -3431,8 +3432,7 @@ function generateConditions(set,p) {
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
     actionsBox.mouseEnabled = false;
-    newGameButton.mouseEnabled = false;
-    exitButton.mouseEnabled = false;
+    menuButton.mouseEnabled = false;
 
     createjs.Tween.get(closeTutorial, {override:true}).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut);
     createjs.Tween.get(logo, {override:true}).to({alpha:0}, 400, createjs.Ease.cubicOut);
@@ -3548,13 +3548,11 @@ function generateConditions(set,p) {
         createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn);
         createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn);
         createjs.Tween.get(startOverlay, {override:true}).wait(200).to({y:-1120}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(newGameLabel, {override:true}).wait(600).to({alpha:1}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(exitLabel, {override:true}).wait(600).to({alpha:1}, 600, createjs.Ease.cubicIn).call(removeTutorial);
+        createjs.Tween.get(menuLabel, {override:true}).wait(600).to({alpha:1}, 600, createjs.Ease.cubicIn).call(removeTutorial);
 
         function removeTutorial() {
           rmAnim();
-          newGameButton.mouseEnabled = true;
-          exitButton.mouseEnabled = true;
+          menuButton.mouseEnabled = true;
           startOverlay.visible = false;
           startOverlayBG.graphics
           .clear()
@@ -3685,22 +3683,6 @@ function generateConditions(set,p) {
         stage.update();
       }
     }
-  }
-
-  function toggleSound() {
-
-    sound.alpha = 1;
-
-    if (soundOn == true) {
-      soundOn = false;
-      soundText.text = "SOUND";
-      tutorialSound.stop();
-    } else {
-      soundOn = true;
-      soundText.text = "MUTE";
-      tutorialSound.play({ numberOfLoops: "infinite" }); 
-    }
-    stage.update();
   }
 
   // INTERACTION
@@ -4145,8 +4127,7 @@ function playLearnAction() {
     stage.update();
 
     createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:canvas.height}, 600, createjs.Ease.cubicIn).call(handleBeginGame);
-    createjs.Tween.get(newGameLabel, {override:true}).call(addAnim,[0]).to({alpha:1}, 1600, createjs.Ease.cubicIn).call(rmAnim);
-    createjs.Tween.get(exitLabel, {override:true}).call(addAnim,[0]).to({alpha:1}, 1600, createjs.Ease.cubicIn).call(rmAnim);
+    createjs.Tween.get(menuLabel, {override:true}).call(addAnim,[0]).to({alpha:1}, 1600, createjs.Ease.cubicIn).call(rmAnim);
 
     function handleBeginGame() {
       rmAnim();
@@ -4156,13 +4137,36 @@ function playLearnAction() {
       selectorsBox.mouseEnabled = true;
       sequenceBox.mouseEnabled = true;
       actionsBox.mouseEnabled = true;
-      newGameButton.mouseEnabled = true;
-      exitButton.mouseEnabled = true;
+      menuButton.mouseEnabled = true;
 
       loadSelectors(selectorsP1);
     }   
   }
 } // end loadIntro
+
+function toggleSound(event) {
+
+  sound.alpha = 1;
+  soundLabel.alpha = 1;
+
+  if (soundOn == true) {
+    soundOn = false;
+    soundText.text = "SOUND";
+    soundLabel.text = "SOUND";
+    tutorialSound.stop();
+    gameSound.stop();
+  } else {
+    soundOn = true;
+    soundText.text = "MUTE";
+    soundLabel.text = "MUTE";
+    if (event.currentTarget.name == "inGame") {
+      gameSound.play({ numberOfLoops: "infinite" }); 
+    } else {
+      tutorialSound.play({ numberOfLoops: "infinite" }); 
+    }
+  }
+  stage.update();
+}
 
 // ------------- ANIMATION -----------------
 

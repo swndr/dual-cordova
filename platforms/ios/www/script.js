@@ -1,5 +1,16 @@
 
-function init() {
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+      
+    var tutorialSound = new Media(window.location.origin + "/sound/instructions.mp3",null,mediaError);
+    var gameSound = new Media(window.location.origin + "/sound/main.mp3",null,mediaError);
+    var winSound = new Media(window.location.origin + "/sound/winning.mp3",null,mediaError);
+
+    function mediaError(e) {
+        alert('Media Error');
+        alert(JSON.stringify(e));
+    }
 
   var canvas = document.getElementById("easel"),
   centerX = canvas.width/2,
@@ -75,6 +86,8 @@ function init() {
   var startOverlay = new createjs.Container();
   var darkOverlay = new createjs.Container();
   var winOverlay = new createjs.Container();
+
+  var soundOn = true;
 
   // BOARD
 
@@ -346,7 +359,6 @@ function generateConditions(set,p) {
 
     replacement.inSlot = false;
     replacement.refresh = true;
-    //console.log(replacement);
     return replacement;
   }
 
@@ -1037,6 +1049,8 @@ function generateConditions(set,p) {
     for (var i = 0; i < 16; i++) {
       sequence[i] = null;
     }
+
+    gameOver = false;
 
     steps = 2;
     wTurns = 0;
@@ -1730,6 +1744,12 @@ function generateConditions(set,p) {
 
   function endGame(color) {
 
+    if (soundOn == true) { 
+      tutorialSound.stop();
+      gameSound.stop(); 
+      winSound.play({ numberOfLoops: "infinite" });
+    }
+
     newGameLabel.alpha= 1;
     newGameButton.addEventListener("mousedown",newGameHighlight);
     newGameButton.addEventListener("pressup",newGame);
@@ -1976,6 +1996,11 @@ function generateConditions(set,p) {
     }
 
     function confirmNewGame() {
+
+      if (soundOn == true) { 
+        winSound.stop(); 
+        gameSound.play({ numberOfLoops: "infinite" });
+      }
 
       confirm.removeAllEventListeners();
       cancel.removeAllEventListeners();
@@ -2596,14 +2621,23 @@ function generateConditions(set,p) {
 
   next.addChild(nextButton,nextText);
 
-  var contact = new createjs.Container().set({x:centerX,y:1900});
-  var contactButton = new createjs.Shape().set({x:-200,y:-60});
-  contactButton.graphics.beginFill(green).drawRect(0,0,400,200);
-  contactButton.alpha = 0.1;
-  var contactText = new createjs.Text("hello@samwander.com","100 40px Avenir-Book",white).set({x:0,y:0});
-  contactText.textAlign = "center";
+  var about = new createjs.Container().set({x:100,y:80});
+  var aboutButton = new createjs.Shape().set({x:-150,y:-70});
+  aboutButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  aboutButton.alpha = 0.1;
+  var aboutText = new createjs.Text("ABOUT","100 40px Avenir-Book",white).set({x:0,y:0});
+  aboutText.textAlign = "left";
 
-  contact.addChild(contactButton,contactText);
+  about.addChild(aboutButton,aboutText);
+
+  var sound = new createjs.Container().set({x:canvas.width-100,y:80});
+  var soundButton = new createjs.Shape().set({x:-250,y:-70});
+  soundButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  soundButton.alpha = 0.1;
+  var soundText = new createjs.Text("MUTE","100 40px Avenir-Book",white).set({x:0,y:0});
+  soundText.textAlign = "right";
+
+  sound.addChild(soundButton,soundText);
 
   var tutorialGrid = new Grid(2,380,1000,230);
 
@@ -2812,6 +2846,45 @@ function generateConditions(set,p) {
   blackCheck.graphics.lineTo(50,20);
   blackCheck.alpha = 0;
 
+  var closeAbout = new createjs.Container().set({x:centerX-50,y:100});
+  var closeAboutButton = new createjs.Shape();
+  closeAboutButton.graphics.beginFill(green).drawRect(-60,-25,230,125);
+  var closeAboutArrow = new createjs.Shape();
+  closeAboutArrow.graphics.beginStroke(white).setStrokeStyle(20,"round", "round");
+  closeAboutArrow.graphics.moveTo(0,60);
+  closeAboutArrow.graphics.lineTo(60,0);
+  closeAboutArrow.graphics.lineTo(120,60);
+  closeAbout.addChild(closeAboutButton,closeAboutArrow);
+  closeAbout.alpha = 0;
+
+  // ABOUT SECTION
+
+  var aboutOverlay = new createjs.Container().set({x:0,y:0});
+
+  var aboutOverlayBG = new createjs.Shape();
+  aboutOverlayBG.graphics.beginFill(blue).drawRect(0,0,canvas.width,1000);
+
+  var aTitle1 = new createjs.Text("Design + Code: Sam Wander","400 60px Avenir-Heavy", white).set({x:centerX,y:250});
+  aTitle1.lineWidth = 1000;
+  aTitle1.textAlign = "center";
+
+  var aTitle2 = new createjs.Text("Music: Maria Usbeck","400 60px Avenir-Heavy", white).set({x:centerX,y:350});
+  aTitle2.lineWidth = 1000;
+  aTitle2.textAlign = "center";
+
+  var aSubTitle1 = new createjs.Text("DUAL was built as part of a thesis project for the MFA Interaction Design program at The School of Visual Arts in New York.","200 40px Avenir-Medium", white).set({x:centerX,y:540});
+  aSubTitle1.lineWidth = 1200;
+  aSubTitle1.lineHeight = 55;
+  aSubTitle1.textAlign = "center";
+
+  var aSubTitle2 = new createjs.Text("Thanks to Ted Case-Hayes, The MFA IxD Faculty \& Class of 2015.","200 40px Avenir-Medium", white).set({x:centerX,y:680});
+  aSubTitle2.lineWidth = 1200;
+  aSubTitle2.lineHeight = 55;
+  aSubTitle2.textAlign = "center";
+
+  aboutOverlay.addChild(aboutOverlayBG,aTitle1,aTitle2,aSubTitle1,aSubTitle2);
+  aboutOverlay.visible = false;
+
   // NEXT SECTION
 
   var nextOverlay = new createjs.Container().set({x:0,y:canvas.height});
@@ -2821,13 +2894,13 @@ function generateConditions(set,p) {
 
   var closeNext = new createjs.Container().set({x:centerX-60,y:100});
   var closeNextButton = new createjs.Shape();
-  closeNextButton.graphics.beginFill(blue).drawRect(-25,-25,200,125);
-  var closeArrow = new createjs.Shape();
-  closeArrow.graphics.beginStroke(white).setStrokeStyle(20,"round", "round");
-  closeArrow.graphics.moveTo(0,60);
-  closeArrow.graphics.lineTo(60,0);
-  closeArrow.graphics.lineTo(120,60);
-  closeNext.addChild(closeNextButton,closeArrow);
+  closeNextButton.graphics.beginFill(blue).drawRect(-60,-25,230,125);
+  var closeNextArrow = new createjs.Shape();
+  closeNextArrow.graphics.beginStroke(white).setStrokeStyle(20,"round", "round");
+  closeNextArrow.graphics.moveTo(0,60);
+  closeNextArrow.graphics.lineTo(60,0);
+  closeNextArrow.graphics.lineTo(120,60);
+  closeNext.addChild(closeNextButton,closeNextArrow);
 
   var nTitle = new createjs.Text("DUAL was designed to introduce players to basic programming concepts.","400 60px Avenir-Heavy", white).set({x:centerX,y:250});
   nTitle.lineWidth = 1200;
@@ -2872,13 +2945,22 @@ function generateConditions(set,p) {
   nConclusion.textAlign = "center";
 
   nextOverlay.addChild(nextOverlayBG,closeNext,nTitle,nSubTitle,nSelection,nSelectionText,nSequence,nSeqText,nLoop,nLoopText,nButton,nConclusion);
+  nextOverlay.visible = false;
 
   startOverlay.visible = false;
-  stage.addChild(startOverlay);
+
+  startOverlay.addChild(startOverlayBG,tutorialGrid,about,sound,closeAbout,logo,tagline,learn,start,next,closeTutorial,tutorialBG,tutorialTray,tutorialText1,tutorialText2,tutorialText3,tutorialNextButton,tutorialNextLabel,seqBox,switchTutorial,tutorialConditions,arrow,whiteCircle,whiteCheck,andCheck,orCheck,blackSquare,blackCheck);
+
+  stage.addChild(aboutOverlay,startOverlay,nextOverlay);
 
   loadIntro();
 
   function loadIntro() {
+
+    if (soundOn == true) { 
+      gameSound.stop();
+      tutorialSound.play({ numberOfLoops: "infinite" }); 
+    }
 
     learnActions = false;
     learnConditions = false;
@@ -2908,14 +2990,13 @@ function generateConditions(set,p) {
     required.visible = false;
     actTray.visible = false;
     seqTray.visible = false;
-    // tutorialConditions.visible = false;
-    // switchTutorial.visible = false;
     andLogicLearn.visible = false;
     orLogicLearn.visible = false;
 
     playButtonLearn.removeAllEventListeners();
+    closeAbout.alpha = 0;
 
-    startOverlay.addChild(startOverlayBG,tutorialGrid,logo,tagline,learn,start,next,closeTutorial,tutorialBG,tutorialTray,tutorialText1,tutorialText2,tutorialText3,tutorialNextButton,tutorialNextLabel,seqBox,switchTutorial,tutorialConditions,arrow,whiteCircle,whiteCheck,andCheck,orCheck,blackSquare,blackCheck);
+    // startOverlay.addChild(startOverlayBG,tutorialGrid,about,sound,closeAbout,logo,tagline,learn,start,next,closeTutorial,tutorialBG,tutorialTray,tutorialText1,tutorialText2,tutorialText3,tutorialNextButton,tutorialNextLabel,seqBox,switchTutorial,tutorialConditions,arrow,whiteCircle,whiteCheck,andCheck,orCheck,blackSquare,blackCheck);
 
     var D = new GameObject(0,1,1,0).set({x:centerX-450,y:0});
     D.scaleX = 1.8;
@@ -2972,6 +3053,16 @@ function generateConditions(set,p) {
     blackCheck.x = centerX+290;
     blackCheck.y = canvas.height-155;
     blackCheck.alpha = 0;
+
+    about.removeAllEventListeners();
+    about.addEventListener("mousedown",highlightButton);
+    about.addEventListener("pressup",showAbout);
+    about.alpha = 1;
+
+    sound.removeAllEventListeners();
+    sound.addEventListener("mousedown",highlightButton);
+    sound.addEventListener("pressup",toggleSound);
+    sound.alpha = 1;
 
     learn.removeAllEventListeners();
     learn.addEventListener("mousedown",highlightButton);
@@ -3054,6 +3145,8 @@ function generateConditions(set,p) {
    
     function beginTutorial(event) {
 
+      about.removeAllEventListeners();
+      sound.removeAllEventListeners();
       learn.removeAllEventListeners();
       start.removeAllEventListeners();
       next.removeAllEventListeners();
@@ -3089,6 +3182,8 @@ function generateConditions(set,p) {
       createjs.Tween.get(learn).call(addAnim,[0]).to({alpha:0}, 300, createjs.Ease.cubicIn);
       createjs.Tween.get(start).wait(300).to({alpha:0}, 300, createjs.Ease.cubicIn);
       createjs.Tween.get(next).wait(300).to({alpha:0}, 300, createjs.Ease.cubicIn);
+      createjs.Tween.get(about).wait(300).to({alpha:0}, 300, createjs.Ease.cubicIn);
+      createjs.Tween.get(sound).wait(300).to({alpha:0}, 300, createjs.Ease.cubicIn);
       createjs.Tween.get(tagline).wait(300).to({alpha:0}, 300, createjs.Ease.cubicIn);
 
       createjs.Tween.get(tutorialGrid).wait(300).to({alpha:1}, 300, createjs.Ease.cubicIn);
@@ -3433,6 +3528,11 @@ function generateConditions(set,p) {
 
       function closeAndBegin() {
 
+        if (soundOn == true) { 
+          tutorialSound.stop();
+          gameSound.play({ numberOfLoops: "infinite" }); 
+        }
+
         tutorialNextButton.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
 
@@ -3464,8 +3564,73 @@ function generateConditions(set,p) {
     }
   }
 
+  function showAbout() {
+
+    about.removeAllEventListeners();
+    sound.removeAllEventListeners();
+    learn.removeAllEventListeners();
+    start.removeAllEventListeners();
+    next.removeAllEventListeners();
+
+    createjs.Ticker.setPaused(false);
+
+    closeAbout.addEventListener("mousedown",highlightButton);
+    closeAbout.addEventListener("pressup",aboutToStart);
+
+    about.alpha = 1;
+
+    aboutOverlay.visible = true;
+
+    createjs.Tween.get(about, {override:true}).call(addAnim,[0]).to({alpha:0}, 300, createjs.Ease.cubicIn);
+    createjs.Tween.get(sound, {override:true}).to({alpha:0}, 300, createjs.Ease.cubicIn);
+    createjs.Tween.get(logo, {override:true}).wait(200).to({y:550}, 300, createjs.Ease.cubicInOut);
+    createjs.Tween.get(tagline, {override:true}).to({alpha:0}, 300, createjs.Ease.cubicOut);
+    createjs.Tween.get(closeAbout, {override:true}).wait(200).to({alpha:1}, 300, createjs.Ease.cubicOut);
+    createjs.Tween.get(startOverlay, {override:true}).to({y:1000}, 600, createjs.Ease.cubicInOut).call(rmAnim);
+
+    function aboutToStart() {
+
+      closeAbout.removeAllEventListeners();
+
+      //document.getElementById("link").style.display="none";
+
+      createjs.Ticker.setPaused(false);
+      createjs.Tween.get(about, {override:true}).call(addAnim,[0]).to({alpha:1}, 300, createjs.Ease.cubicIn);
+      createjs.Tween.get(sound, {override:true}).to({alpha:1}, 300, createjs.Ease.cubicIn);
+      createjs.Tween.get(logo, {override:true}).to({y:700}, 400, createjs.Ease.cubicInOut);
+      createjs.Tween.get(tagline, {override:true}).to({alpha:1}, 300, createjs.Ease.cubicIn);
+      createjs.Tween.get(closeAbout, {override:true}).to({alpha:0}, 300, createjs.Ease.cubicOut);
+      createjs.Tween.get(startOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicInOut).call(cleanAbout);
+
+      function cleanAbout() {
+
+        about.addEventListener("mousedown",highlightButton);
+        about.addEventListener("pressup",showAbout);
+
+        sound.addEventListener("mousedown",highlightButton);
+        sound.addEventListener("pressup",toggleSound);
+
+        learn.addEventListener("mousedown",highlightButton);
+        learn.addEventListener("pressup",beginTutorial);
+
+        start.addEventListener("mousedown",highlightButton);
+        start.addEventListener("pressup",beginGame);
+
+        next.addEventListener("mousedown",highlightButton);
+        next.addEventListener("pressup",showNext);
+
+        rmAnim();
+        closeAbout.alpha = 0;
+        aboutOverlay.visible = false;
+        stage.update();
+      }
+    }
+  }
+
   function showNext() {
 
+    about.removeAllEventListeners();
+    sound.removeAllEventListeners();
     learn.removeAllEventListeners();
     start.removeAllEventListeners();
     next.removeAllEventListeners();
@@ -3477,7 +3642,7 @@ function generateConditions(set,p) {
 
     next.alpha = 1;
 
-    stage.addChild(nextOverlay);
+    nextOverlay.visible = true;
 
     createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:-canvas.height}, 600, createjs.Ease.cubicIn);
     createjs.Tween.get(nextOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn).call(showLink);
@@ -3489,6 +3654,8 @@ function generateConditions(set,p) {
 
     function nextToStart() {
 
+      closeNext.removeAllEventListeners();
+
       document.getElementById("link").style.display="none";
 
       createjs.Ticker.setPaused(false);
@@ -3496,6 +3663,12 @@ function generateConditions(set,p) {
       createjs.Tween.get(nextOverlay, {override:true}).to({y:canvas.height}, 600, createjs.Ease.cubicIn).call(cleanNext);
 
       function cleanNext() {
+
+        about.addEventListener("mousedown",highlightButton);
+        about.addEventListener("pressup",showAbout);
+
+        sound.addEventListener("mousedown",highlightButton);
+        sound.addEventListener("pressup",toggleSound);
 
         learn.addEventListener("mousedown",highlightButton);
         learn.addEventListener("pressup",beginTutorial);
@@ -3508,10 +3681,26 @@ function generateConditions(set,p) {
 
         rmAnim();
         closeNext.alpha = 1;
-        stage.removeChild(nextOverlay);
+        nextOverlay.visible = false;
         stage.update();
       }
     }
+  }
+
+  function toggleSound() {
+
+    sound.alpha = 1;
+
+    if (soundOn == true) {
+      soundOn = false;
+      soundText.text = "SOUND";
+      tutorialSound.stop();
+    } else {
+      soundOn = true;
+      soundText.text = "MUTE";
+      tutorialSound.play({ numberOfLoops: "infinite" }); 
+    }
+    stage.update();
   }
 
   // INTERACTION
@@ -3940,6 +4129,11 @@ function playLearnAction() {
   // BEGIN GAME
 
   function beginGame(event) {
+
+    if (soundOn == true) { 
+      tutorialSound.stop();
+      gameSound.play({ numberOfLoops: "infinite" }); 
+    }
 
     createjs.Ticker.setPaused(false);
 

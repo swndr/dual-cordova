@@ -8,5 +8,5 @@
         Sam Wander
     </author>
     <content src="index.html" />
-    <access origin="*.playdual.*" />
+    <access origin="*" />
 </widget>

@@ -1977,6 +1977,11 @@ function generateConditions(set,p) {
 
   function confirmNewGame() {
 
+    if (soundOn == true) { 
+      winSound.stop();
+      gameSound.play({ numberOfLoops: "infinite" }); 
+    }
+
     restart.removeAllEventListeners();
     quit.removeAllEventListeners();
     soundOption.removeAllEventListeners();
@@ -2878,7 +2883,7 @@ function generateConditions(set,p) {
   aSubTitle1.lineHeight = 55;
   aSubTitle1.textAlign = "center";
 
-  var aSubTitle2 = new createjs.Text("Thanks to Ted Case-Hayes, The MFA IxD Faculty \& Class of 2015.","200 40px Avenir-Medium", white).set({x:centerX,y:680});
+  var aSubTitle2 = new createjs.Text("Thanks to Ted Case-Hayes, MFA IxD Faculty \& Class of 2015.","200 40px Avenir-Medium", white).set({x:centerX,y:680});
   aSubTitle2.lineWidth = 1200;
   aSubTitle2.lineHeight = 55;
   aSubTitle2.textAlign = "center";
@@ -2996,8 +3001,6 @@ function generateConditions(set,p) {
 
     playButtonLearn.removeAllEventListeners();
     closeAbout.alpha = 0;
-
-    // startOverlay.addChild(startOverlayBG,tutorialGrid,about,sound,closeAbout,logo,tagline,learn,start,next,closeTutorial,tutorialBG,tutorialTray,tutorialText1,tutorialText2,tutorialText3,tutorialNextButton,tutorialNextLabel,seqBox,switchTutorial,tutorialConditions,arrow,whiteCircle,whiteCheck,andCheck,orCheck,blackSquare,blackCheck);
 
     var D = new GameObject(0,1,1,0).set({x:centerX-450,y:0});
     D.scaleX = 1.8;
@@ -3764,7 +3767,7 @@ function generateConditions(set,p) {
         sequence[pos.slot] = item;
         targetGameObjectsLearn();
         targetCount++;
-        if (showLogic == false && targetCount > 2) { showLogicItems(); }
+        if (showLogic == false && targetCount > 1) { showLogicItems(); }
       } else { 
         returnToOriginLearn(item,item.originParent,item.originX,item.originY);
       }

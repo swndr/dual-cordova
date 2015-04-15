@@ -2941,13 +2941,10 @@ function generateConditions(set,p) {
   nLoopText.lineHeight = 55;
   nLoopText.textAlign = "left";
 
-  var nButton = new createjs.Shape().set({x:centerX-400,y:1770});
-  nButton.graphics.beginFill("#EAEAEA");
-  nButton.graphics.drawRoundRect(0,0,800,160,20);
+  var nButton = new createjs.Shape().set({x:0,y:canvas.height-200});
+  nButton.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,200);
 
-  var nConclusion = new createjs.Text("LEARN MORE","200 80px Avenir-Heavy", pink).set({x:centerX,y:1800});
-  nConclusion.lineWidth = 800;
-  nConclusion.lineHeight = 65;
+  var nConclusion = new createjs.Text("LEARN MORE","200 80px Avenir-Heavy",pink).set({x:centerX,y:canvas.height-160});
   nConclusion.textAlign = "center";
 
   nextOverlay.addChild(nextOverlayBG,closeNext,nTitle,nSubTitle,nSelection,nSelectionText,nSequence,nSeqText,nLoop,nLoopText,nButton,nConclusion);

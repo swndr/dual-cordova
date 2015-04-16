@@ -140,7 +140,23 @@ function onDeviceReady() {
   var blackScore = new createjs.Text(bScore, largeLabelStyle, black).set({x:(canvas.width - 160),y:425});
   blackScore.textAlign = "right";
 
-    board.addChild(menuButton,menuLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
+  board.addChild(menuButton,menuLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
+
+  // CONFETTI
+
+  for (var i = 0; i < 80; i++) {
+    var confetti = new createjs.Shape().set({x:getRandomInt(0,canvas.width),y:canvas.height+100});
+    var r = getRandomInt(20,50);
+    if (i%2) {
+      confetti.graphics.beginFill(black).drawRect(0,0,r*2,r*2);
+      confetti.type = 0
+    } else {
+      confetti.graphics.beginFill(white).drawCircle(0,0,r);
+      confetti.type = 1;
+    }
+    confetti.alpha = .7;
+    confettiContainer.addChild(confetti);
+  }
 
   // PLAYER CONTROLS
 
@@ -1816,24 +1832,26 @@ function generateConditions(set,p) {
     createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:1}, 200, createjs.Ease.cubicInOut);
     createjs.Tween.get(winOverlay, {override:true}).wait(50).to({y:890}, 300, createjs.Ease.cubicInOut).call(rmAnim);
 
-    for (var i = 0; i < 40; i++) {
-      var confetti = new createjs.Shape().set({x:getRandomInt(-100,canvas.width+100),y:canvas.height+getRandomInt(50,100)});
-      var r = getRandomInt(20,50);
+    for (var i = 0; i < 80; i++) {
+      confettiContainer.children[i].x = getRandomInt(-100,canvas.width+100);
+      confettiContainer.children[i].y = canvas.height+getRandomInt(100,200);
+      confettiContainer.children[i].rotation = getRandomInt(-80,80);
+    }
+
+    for (var i = 0; i < 80; i++) {
       if (color == 0) {
-        confetti.graphics.beginFill(black).drawRect(0,0,r,r);
+        if (confettiContainer.children[i].type == 0) {
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-0,canvas.width+100),y:getRandomInt(-100,-200)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+        }
       } else if (color == 1) {
-        confetti.graphics.beginFill(white).drawCircle(0,0,r);
+        if (confettiContainer.children[i].type == 1) {
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-0,canvas.width+100),y:getRandomInt(-100,-200)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+        }
       } else {
-        if (i%2) {
-          confetti.graphics.beginFill(black).drawRect(0,0,r,r);
-        } else {
-          confetti.graphics.beginFill(white).drawCircle(0,0,r);
+        if (i < 40) {
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-0,canvas.width+100),y:getRandomInt(-100,-200)}, 3000, createjs.Ease.backInOut).call(rmAnim);
         }
       }
-      confetti.rotation = getRandomInt(-80,80);
-      confetti.alpha = .7;
-      confettiContainer.addChild(confetti);
-      createjs.Tween.get(confetti, {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-0,canvas.width+100),y:getRandomInt(-50,-100)}, 3000, createjs.Ease.backInOut).call(rmAnim);
     }
 
     function newGameBannerHighlight() {
@@ -2009,7 +2027,6 @@ function generateConditions(set,p) {
       createjs.Ticker.setPaused(false);
       createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicInOut);
       createjs.Tween.get(winOverlay, {override:true}).to({y:canvas.height}, 300, createjs.Ease.cubicInOut).call(rmAnim);
-      confettiContainer.removeAllChildren();
       confettiContainer.visible = false;
     }
 

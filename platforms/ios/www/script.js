@@ -1030,7 +1030,7 @@ function generateConditions(set,p) {
 
   stage.addChild(board,winGrid,sequenceBox,selectorsBox,actionsBox,gameObjects,winOverlay,darkOverlay);
 
-  function loadGame() {
+  function loadGame(delay) {
 
     for (var i = 0; i < 10; i++) {
       selectorsP1[i] = null;
@@ -1072,11 +1072,11 @@ function generateConditions(set,p) {
 
     selectorsP1 = generateConditions(selectorsP1,1);
     selectorsP2 = generateConditions(selectorsP2,2);
-    loadGameObjects(4);
+    loadGameObjects(4,delay);
     stage.update();
   }
 
-  function loadGameObjects(gridSize) {
+  function loadGameObjects(gridSize,delay) {
 
     gameObjects.removeAllChildren();
 
@@ -1090,6 +1090,26 @@ function generateConditions(set,p) {
       if (i/(row+1) == gridSize) { row++; column = 0; }
 
       var fourm = new GameObject(startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
+      var tempX0 = fourm.children[0].x;
+      var tempY0 = fourm.children[0].y;
+      fourm.children[0].x = getRandomInt(-200,200);
+      fourm.children[0].y = getRandomInt(-200,200);
+      fourm.children[0].rotation = getRandomInt(-80,80);
+      var tempX1 = fourm.children[1].x;
+      var tempY1 = fourm.children[1].y;
+      fourm.children[1].x = getRandomInt(-200,200);
+      fourm.children[1].y = getRandomInt(-200,200);
+      fourm.children[1].rotation = getRandomInt(-80,80);
+      var tempX2 = fourm.children[2].x;
+      var tempY2 = fourm.children[2].y;
+      fourm.children[2].x = getRandomInt(-200,200);
+      fourm.children[2].y = getRandomInt(-200,200);
+      fourm.children[2].rotation = getRandomInt(-80,80);
+      var tempX3 = fourm.children[3].x;
+      var tempY3 = fourm.children[3].y;
+      fourm.children[3].x = getRandomInt(-200,200);
+      fourm.children[3].y = getRandomInt(-200,200);
+      fourm.children[3].rotation = getRandomInt(-80,80);
       fourm.x = colVal(column,4,180);
       fourm.y = rowVal(row,4,180,890);
       fourm.id = i;
@@ -1100,6 +1120,11 @@ function generateConditions(set,p) {
       gameObjects.addChild(fourm);
 
       column++;
+
+      createjs.Tween.get(fourm.children[0], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX0,y:tempY0}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(fourm.children[1], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX1,y:tempY1}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(fourm.children[2], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX2,y:tempY2}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(fourm.children[3], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX3,y:tempY3}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
 
     }
   }
@@ -2030,7 +2055,7 @@ function generateConditions(set,p) {
     winOverlay.visible = false;
     winGrid.visible = false;
 
-    loadGame();
+    loadGame(0);
     stage.update();
 
     loadSelectors(selectorsP1);
@@ -3427,7 +3452,7 @@ function generateConditions(set,p) {
     createjs.Ticker.setPaused(false);
 
     sequence = [];
-    loadGame();
+    loadGame(200);
 
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
@@ -4122,7 +4147,7 @@ function playLearnAction() {
     event.currentTarget.alpha = 1;
 
     sequence = [];
-    loadGame();
+    loadGame(200);
 
     stage.update();
 

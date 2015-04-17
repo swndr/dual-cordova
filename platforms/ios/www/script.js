@@ -146,15 +146,16 @@ function onDeviceReady() {
 
   for (var i = 0; i < 80; i++) {
     var confetti = new createjs.Shape().set({x:getRandomInt(0,canvas.width),y:canvas.height+100});
-    var r = getRandomInt(20,50);
+    var r = getRandomInt(40,80);
     if (i%2) {
-      confetti.graphics.beginFill(black).drawRect(0,0,r*2,r*2);
+      confetti.graphics.beginFill(black).drawRect(0,0,r,r);
       confetti.type = 0
     } else {
-      confetti.graphics.beginFill(white).drawCircle(0,0,r);
+      confetti.graphics.beginFill(white).drawRoundRectComplex(0,0,r,r,0,r,0,0);
       confetti.type = 1;
     }
     confetti.alpha = .7;
+    confetti.cache(-r/2,-r/2,r*2,r*2);
     confettiContainer.addChild(confetti);
   }
 
@@ -1832,24 +1833,24 @@ function generateConditions(set,p) {
     createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:1}, 200, createjs.Ease.cubicInOut);
     createjs.Tween.get(winOverlay, {override:true}).wait(50).to({y:890}, 300, createjs.Ease.cubicInOut).call(rmAnim);
 
-  for (var i = 0; i < 80; i++) {
-      confettiContainer.children[i].x = getRandomInt(-100,canvas.width+100);
-      confettiContainer.children[i].y = getRandomInt(-100,-200);
+    for (var i = 0; i < 80; i++) {
+      confettiContainer.children[i].x = getRandomInt(-200,canvas.width+200);
+      confettiContainer.children[i].y = getRandomInt(-200,-300);
       confettiContainer.children[i].rotation = getRandomInt(-80,80);
     }
 
     for (var i = 0; i < 80; i++) {
       if (color == 0) {
         if (confettiContainer.children[i].type == 0) {
-          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-100,canvas.width+100),y:canvas.height+getRandomInt(100,200)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
         }
       } else if (color == 1) {
         if (confettiContainer.children[i].type == 1) {
-          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-100,canvas.width+100),y:canvas.height+getRandomInt(100,200)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
         }
       } else {
         if (i<40) {
-          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-100,canvas.width+100),y:canvas.height+getRandomInt(100,200)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
         }
       }
     }

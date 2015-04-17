@@ -2,6 +2,10 @@
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
+
+    setTimeout(function() {
+      navigator.splashscreen.hide();
+    }, 500);
       
     var tutorialSound = new Media(window.location.origin + "/sound/instructions.mp3",null,mediaError);
     var gameSound = new Media(window.location.origin + "/sound/main.mp3",null,mediaError);

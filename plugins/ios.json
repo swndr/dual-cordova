@@ -22,7 +22,7 @@
                     "CoreGraphics.framework": [
                         {
                             "xml": false,
-                            "count": 1
+                            "count": 2
                         }
                     ],
                     "AssetsLibrary.framework": [
@@ -57,6 +57,10 @@
                         {
                             "xml": "<feature name=\"Media\"><param name=\"ios-package\" value=\"CDVSound\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"SplashScreen\"><param name=\"ios-package\" value=\"CDVSplashScreen\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -71,6 +75,9 @@
             "PACKAGE_NAME": "com.samwander.dual"
         },
         "org.apache.cordova.media": {
+            "PACKAGE_NAME": "com.samwander.dual"
+        },
+        "cordova-plugin-splashscreen": {
             "PACKAGE_NAME": "com.samwander.dual"
         }
     },

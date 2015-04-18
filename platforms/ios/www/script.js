@@ -1,9 +1,11 @@
-console.log("hello");
-
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
-    
+
+    setTimeout(function() {
+      navigator.splashscreen.hide();
+    }, 500);
+      
     var tutorialSound = new Media(window.location.origin + "/sound/instructions.mp3",null,mediaError);
     var gameSound = new Media(window.location.origin + "/sound/main.mp3",null,mediaError);
     var winSound = new Media(window.location.origin + "/sound/winning.mp3",null,mediaError);
@@ -12,8 +14,6 @@ function onDeviceReady() {
         alert('Media Error');
         alert(JSON.stringify(e));
     }
-
-
 
   var dropPosition = null;
 
@@ -64,6 +64,7 @@ function onDeviceReady() {
   var startOverlay = new createjs.Container();
   var darkOverlay = new createjs.Container();
   var winOverlay = new createjs.Container();
+  var confettiContainer = new createjs.Container();
 
   var soundOn = true;
 
@@ -117,7 +118,24 @@ function onDeviceReady() {
   var blackScore = new createjs.Text(bScore, largeLabelStyle, black).set({x:(canvas.width - 160),y:425});
   blackScore.textAlign = "right";
 
-    board.addChild(menuButton,menuLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
+  board.addChild(menuButton,menuLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
+
+  // CONFETTI
+
+  for (var i = 0; i < 80; i++) {
+    var confetti = new createjs.Shape().set({x:getRandomInt(0,canvas.width),y:canvas.height+100});
+    var r = getRandomInt(40,80);
+    if (i%2) {
+      confetti.graphics.beginFill(black).drawRect(0,0,r,r);
+      confetti.type = 0
+    } else {
+      confetti.graphics.beginFill(white).drawRoundRectComplex(0,0,r,r,0,r,0,0);
+      confetti.type = 1;
+    }
+    confetti.alpha = .7;
+    confetti.cache(-r/2,-r/2,r*2,r*2);
+    confettiContainer.addChild(confetti);
+  }
 
   // PLAYER CONTROLS
 
@@ -518,10 +536,11 @@ function generateConditions(set,p) {
   gameObjects.visible = false;
   darkOverlay.visible = false;
   winOverlay.visible = false;
+  confettiContainer.visible = false;
 
-  stage.addChild(board,winGrid,sequenceBox,selectorsBox,actionsBox,gameObjects,winOverlay,darkOverlay);
+  stage.addChild(board,winGrid,sequenceBox,selectorsBox,actionsBox,gameObjects,winOverlay,darkOverlay,confettiContainer);
 
-  function loadGame() {
+  function loadGame(delay) {
 
     for (var i = 0; i < 10; i++) {
       selectorsP1[i] = null;
@@ -563,11 +582,11 @@ function generateConditions(set,p) {
 
     selectorsP1 = generateConditions(selectorsP1,1);
     selectorsP2 = generateConditions(selectorsP2,2);
-    loadGameObjects(4);
+    loadGameObjects(4,delay);
     stage.update();
   }
 
-  function loadGameObjects(gridSize) {
+  function loadGameObjects(gridSize,delay) {
 
     gameObjects.removeAllChildren();
 
@@ -581,6 +600,26 @@ function generateConditions(set,p) {
       if (i/(row+1) == gridSize) { row++; column = 0; }
 
       var fourm = new GameObject(startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
+      var tempX0 = fourm.children[0].x;
+      var tempY0 = fourm.children[0].y;
+      fourm.children[0].x = getRandomInt(-200,200);
+      fourm.children[0].y = getRandomInt(-200,200);
+      fourm.children[0].rotation = getRandomInt(-80,80);
+      var tempX1 = fourm.children[1].x;
+      var tempY1 = fourm.children[1].y;
+      fourm.children[1].x = getRandomInt(-200,200);
+      fourm.children[1].y = getRandomInt(-200,200);
+      fourm.children[1].rotation = getRandomInt(-80,80);
+      var tempX2 = fourm.children[2].x;
+      var tempY2 = fourm.children[2].y;
+      fourm.children[2].x = getRandomInt(-200,200);
+      fourm.children[2].y = getRandomInt(-200,200);
+      fourm.children[2].rotation = getRandomInt(-80,80);
+      var tempX3 = fourm.children[3].x;
+      var tempY3 = fourm.children[3].y;
+      fourm.children[3].x = getRandomInt(-200,200);
+      fourm.children[3].y = getRandomInt(-200,200);
+      fourm.children[3].rotation = getRandomInt(-80,80);
       fourm.x = colVal(column,4,180);
       fourm.y = rowVal(row,4,180,890);
       fourm.id = i;
@@ -591,6 +630,11 @@ function generateConditions(set,p) {
       gameObjects.addChild(fourm);
 
       column++;
+
+      createjs.Tween.get(fourm.children[0], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX0,y:tempY0}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(fourm.children[1], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX1,y:tempY1}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(fourm.children[2], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX2,y:tempY2}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(fourm.children[3], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX3,y:tempY3}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
 
     }
   }
@@ -1114,35 +1158,19 @@ function generateConditions(set,p) {
     switch(n) {
       case 0:
         if (countCompleteShapes(0)) {
-          console.log(completeRows);
-          console.log(completeCols);
-          console.log(completeDiag);
           endGame(0);
-          console.log("black win");
         }
         break;
       case 1:
         if (countCompleteShapes(1)) {
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
             endGame(1);
-            console.log("white win");
         }
         break;
       case 2:
         if ((countCompleteShapes(0)) && !(countCompleteShapes(1))) {
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
             endGame(0);
-            console.log("black win");
         } else if (!(countCompleteShapes(0)) && (countCompleteShapes(1))) {
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
             endGame(1);
-            console.log("white win");
         } else if ((countCompleteShapes(0)) && (countCompleteShapes(1))) {
             countCompleteShapes(0);
             var blackTotal = completeRows.length + completeCols.length + completeDiag.length;
@@ -1150,27 +1178,12 @@ function generateConditions(set,p) {
             var whiteTotal = completeRows.length + completeCols.length + completeDiag.length;
           if (blackTotal > whiteTotal) {
             countCompleteShapes(0);
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
             endGame(0);
-            console.log("black win");
           } else if (whiteTotal > blackTotal) {
             endGame(1);
-            console.log("white win");
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
           } else {
             endGame(2);
-            console.log("draw");
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
             countCompleteShapes(0);
-            console.log(completeRows);
-            console.log(completeCols);
-            console.log(completeDiag);
           }
         }
         break;
@@ -1237,7 +1250,6 @@ function generateConditions(set,p) {
     clearSequence();
 
     gameOver = true;
-    console.log(gameOver);
     createjs.Ticker.setPaused(false);
 
     for (var i in objectsInPlay) {
@@ -1265,6 +1277,7 @@ function generateConditions(set,p) {
     winOverlay.visible = true;
     winGrid.visible = true;
     winOverlay.y = canvas.height;
+    confettiContainer.visible = true;
 
     var winBG = new createjs.Shape();
     winBG.graphics.beginFill(pink).drawRect(0,0,canvas.width,(canvas.height-890));
@@ -1277,29 +1290,29 @@ function generateConditions(set,p) {
     var newGameBannerText = new createjs.Text("NEW GAME","bold 80px Avenir-Heavy",green).set({x:centerX,y:960});
     newGameBannerText.textAlign = "center";
 
-    var victory = new createjs.Text(winner,"bold 100px Avenir-Heavy",victoryColor).set({x:centerX,y:90});
+    var victory = new createjs.Text(winner,"bold 100px Avenir-Heavy",victoryColor).set({x:centerX,y:40});
     victory.textAlign = "center";
 
-    var whiteTitle = new createjs.Text("WHITE /","bold 55px Avenir-Heavy",white).set({x:70,y:300});
+    var whiteTitle = new createjs.Text("WHITE /","bold 55px Avenir-Heavy",white).set({x:70,y:250});
     whiteTitle.textAlign = "left";
-    var whiteTurns = new createjs.Text(wTurns + " TURNS","100 55px Avenir-Book",white).set({x:70,y:400});
+    var whiteTurns = new createjs.Text(wTurns + " TURNS","100 55px Avenir-Book",white).set({x:70,y:350});
     whiteTurns.textAlign = "left"; 
-    var whiteConditions = new createjs.Text(wConditions + " CONDITIONS USED","100 55px Avenir-Book",white).set({x:70,y:500});
+    var whiteConditions = new createjs.Text(wConditions + " CONDITIONS USED","100 55px Avenir-Book",white).set({x:70,y:450});
     whiteConditions.textAlign = "left"; 
-    var whiteActions = new createjs.Text(wActions + " ACTIONS USED","100 55px Avenir-Book",white).set({x:70,y:600});
+    var whiteActions = new createjs.Text(wActions + " ACTIONS USED","100 55px Avenir-Book",white).set({x:70,y:550});
     whiteActions.textAlign = "left";
-    var whiteComplete = new createjs.Text(wComplete + " COMPLETED CIRCLES","100 55px Avenir-Book",white).set({x:70,y:700});
+    var whiteComplete = new createjs.Text(wComplete + " COMPLETED CIRCLES","100 55px Avenir-Book",white).set({x:70,y:650});
     whiteComplete.textAlign = "left"; 
 
-    var blackTitle = new createjs.Text("BLACK /","bold 55px Avenir-Heavy",black).set({x:(canvas.width/2)+60,y:300});
+    var blackTitle = new createjs.Text("BLACK /","bold 55px Avenir-Heavy",black).set({x:(canvas.width/2)+60,y:250});
     blackTitle.textAlign = "left";
-    var blackTurns = new createjs.Text(bTurns + " TURNS","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:400});
+    var blackTurns = new createjs.Text(bTurns + " TURNS","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:350});
     blackTurns.textAlign = "left"; 
-    var blackConditions = new createjs.Text(bConditions + " CONDITIONS USED","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:500});
+    var blackConditions = new createjs.Text(bConditions + " CONDITIONS USED","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:450});
     blackConditions.textAlign = "left"; 
-    var blackActions = new createjs.Text(bActions + " ACTIONS USED","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:600});
+    var blackActions = new createjs.Text(bActions + " ACTIONS USED","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:550});
     blackActions.textAlign = "left";
-    var blackComplete = new createjs.Text(bComplete + " COMPLETED SQUARES","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:700});
+    var blackComplete = new createjs.Text(bComplete + " COMPLETED SQUARES","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:650});
     blackComplete.textAlign = "left";
 
     winOverlay.addChild(winBG,newGameBanner,newGameBannerText,victory,whiteTitle,whiteTurns,whiteConditions,whiteActions,whiteComplete,blackTitle,blackTurns,blackConditions,blackActions,blackComplete);
@@ -1310,6 +1323,28 @@ function generateConditions(set,p) {
 
     createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:1}, 200, createjs.Ease.cubicInOut);
     createjs.Tween.get(winOverlay, {override:true}).wait(50).to({y:890}, 300, createjs.Ease.cubicInOut).call(rmAnim);
+
+    for (var i = 0; i < 80; i++) {
+      confettiContainer.children[i].x = getRandomInt(-200,canvas.width+200);
+      confettiContainer.children[i].y = getRandomInt(-200,-300);
+      confettiContainer.children[i].rotation = getRandomInt(-80,80);
+    }
+
+    for (var i = 0; i < 80; i++) {
+      if (color == 0) {
+        if (confettiContainer.children[i].type == 0) {
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+        }
+      } else if (color == 1) {
+        if (confettiContainer.children[i].type == 1) {
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+        }
+      } else {
+        if (i<40) {
+          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
+        }
+      }
+    }
 
     function newGameBannerHighlight() {
       newGameBanner.alpha = .9;
@@ -1484,6 +1519,7 @@ function generateConditions(set,p) {
       createjs.Ticker.setPaused(false);
       createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicInOut);
       createjs.Tween.get(winOverlay, {override:true}).to({y:canvas.height}, 300, createjs.Ease.cubicInOut).call(rmAnim);
+      confettiContainer.visible = false;
     }
 
     for (i in objectsInPlay) {
@@ -1521,7 +1557,7 @@ function generateConditions(set,p) {
     winOverlay.visible = false;
     winGrid.visible = false;
 
-    loadGame();
+    loadGame(0);
     stage.update();
 
     loadSelectors(selectorsP1);
@@ -2081,6 +2117,7 @@ function generateConditions(set,p) {
   var triedBoth = false;
   var madeCircle = false;
   var madeSquare = false;
+  var madeBoth = false;
 
   var startOverlayBG = new createjs.Shape();
   startOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,canvas.height);
@@ -2466,6 +2503,7 @@ function generateConditions(set,p) {
     triedBoth = false;
     madeCircle = false;
     madeSquare = false;
+    madeBoth = false;
 
     tutorialObjectsInPlay = [];
     logo.removeAllChildren();
@@ -2918,7 +2956,7 @@ function generateConditions(set,p) {
     createjs.Ticker.setPaused(false);
 
     sequence = [];
-    loadGame();
+    loadGame(200);
 
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
@@ -3484,7 +3522,7 @@ function generateConditions(set,p) {
       createjs.Tween.get(whiteCheck).call(addAnim,[0]).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
     }
 
-    if (switchCount >= 2 && madeSquare == true && madeCircle == true) { 
+    if (switchCount >= 2 && madeSquare == true && madeCircle == true && madeBoth == false) { 
 
       addButtonEvent(tryConditions);
 
@@ -3501,6 +3539,7 @@ function generateConditions(set,p) {
       createjs.Tween.get(blackCheck).to({y:blackCheck.y-210},400, createjs.Ease.cubicInOut).to({alpha:1}, 400, createjs.Ease.cubicIn);
       createjs.Tween.get(tutorialNextButton).wait(600).to({alpha:1}, 100, createjs.Ease.cubicIn);
       createjs.Tween.get(tutorialNextLabel).wait(600).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+      madeBoth = true;
   }
 
     sequenceReadyLearn();
@@ -3613,7 +3652,7 @@ function playLearnAction() {
     event.currentTarget.alpha = 1;
 
     sequence = [];
-    loadGame();
+    loadGame(200);
 
     stage.update();
 

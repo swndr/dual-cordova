@@ -29,6 +29,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+        "id": "cordova-plugin-splashscreen.SplashScreen",
+        "clobbers": [
+            "navigator.splashscreen"
+        ]
+    },
+    {
         "file": "plugins/org.apache.cordova.file/www/DirectoryEntry.js",
         "id": "org.apache.cordova.file.DirectoryEntry",
         "clobbers": [
@@ -181,6 +188,7 @@ module.exports.metadata =
     "com.telerik.plugins.wkwebview": "0.3.5",
     "org.apache.cordova.inappbrowser": "0.6.0",
     "org.apache.cordova.media": "0.2.16",
+    "cordova-plugin-splashscreen": "2.0.1-dev",
     "org.apache.cordova.file": "1.3.3"
 }
 // BOTTOM OF METADATA

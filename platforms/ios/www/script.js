@@ -1916,21 +1916,9 @@ function generateConditions(set,p) {
     }
 
     for (var i = 0; i < 80; i++) {
-      if (color == 0) {
-        if (confettiContainer.children[i].type == 0) {
-          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
-        }
-      } else if (color == 1) {
-        if (confettiContainer.children[i].type == 1) {
-          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
-        }
-      } else {
-        if (i<40) {
-          createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,1000)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, 3000, createjs.Ease.backInOut).call(rmAnim);
-        }
+      createjs.Tween.get(confettiContainer.children[i], {override:true}).wait(getRandomInt(0,500)).call(addAnim,[0]).to({rotation:getRandomInt(-80,80),x:getRandomInt(-200,canvas.width+200),y:canvas.height+getRandomInt(200,300)}, getRandomInt(1000,5000), createjs.Ease.backInOut).call(rmAnim);
       }
-    }
-
+    
     function newGameBannerHighlight() {
       newGameBanner.alpha = .9;
       stage.update(); 
@@ -2977,25 +2965,30 @@ function generateConditions(set,p) {
   var aboutOverlayBG = new createjs.Shape();
   aboutOverlayBG.graphics.beginFill(blue).drawRect(0,0,canvas.width,1000);
 
-  var aTitle1 = new createjs.Text("Design + Code: Sam Wander","400 60px Avenir-Heavy", white).set({x:centerX,y:250});
+  var aTitle1 = new createjs.Text("Design + Code: Sam Wander","400 60px Avenir-Heavy", white).set({x:centerX,y:150});
   aTitle1.lineWidth = 1000;
   aTitle1.textAlign = "center";
 
-  var aTitle2 = new createjs.Text("Music: Maria Usbeck","400 60px Avenir-Heavy", white).set({x:centerX,y:350});
+  var aTitle2 = new createjs.Text("Music: Maria Usbeck","400 60px Avenir-Heavy", white).set({x:centerX,y:250});
   aTitle2.lineWidth = 1000;
   aTitle2.textAlign = "center";
 
-  var aSubTitle1 = new createjs.Text("DUAL was built as part of a thesis project for the MFA Interaction Design program at The School of Visual Arts in New York.","200 40px Avenir-Medium", white).set({x:centerX,y:540});
+  var aSubTitle1 = new createjs.Text("DUAL was built as part of a thesis project for the MFA Interaction Design program at The School of Visual Arts in New York.","200 40px Avenir-Medium", white).set({x:centerX,y:440});
   aSubTitle1.lineWidth = 1200;
   aSubTitle1.lineHeight = 55;
   aSubTitle1.textAlign = "center";
 
-  var aSubTitle2 = new createjs.Text("Thanks to Ted Case-Hayes, MFA IxD Faculty \& Class of 2015.","200 40px Avenir-Medium", white).set({x:centerX,y:680});
+  var aSubTitle2 = new createjs.Text("Thanks to Ted Case-Hayes, MFA IxD Faculty \& Class of 2015.","200 40px Avenir-Medium", white).set({x:centerX,y:580});
   aSubTitle2.lineWidth = 1200;
   aSubTitle2.lineHeight = 55;
   aSubTitle2.textAlign = "center";
 
-  aboutOverlay.addChild(aboutOverlayBG,aTitle1,aTitle2,aSubTitle1,aSubTitle2);
+  var aLink = new createjs.Text("playdual.com","400 60px Avenir-Heavy", white).set({x:centerX,y:780});
+  aLink.lineWidth = 1200;
+  aLink.lineHeight = 55;
+  aLink.textAlign = "center";
+
+  aboutOverlay.addChild(aboutOverlayBG,aTitle1,aTitle2,aSubTitle1,aSubTitle2,aLink);
   aboutOverlay.visible = false;
 
   // NEXT SECTION
@@ -3692,13 +3685,18 @@ function generateConditions(set,p) {
     createjs.Tween.get(logo, {override:true}).wait(200).to({y:550}, 300, createjs.Ease.cubicInOut);
     createjs.Tween.get(tagline, {override:true}).to({alpha:0}, 300, createjs.Ease.cubicOut);
     createjs.Tween.get(closeAbout, {override:true}).wait(200).to({alpha:1}, 300, createjs.Ease.cubicOut);
-    createjs.Tween.get(startOverlay, {override:true}).to({y:1000}, 600, createjs.Ease.cubicInOut).call(rmAnim);
+    createjs.Tween.get(startOverlay, {override:true}).to({y:1000}, 600, createjs.Ease.cubicInOut).call(showLink);
+
+    function showLink() {
+      rmAnim();
+      document.getElementById("main").style.display="block";
+    }
 
     function aboutToStart() {
 
       closeAbout.removeAllEventListeners();
 
-      //document.getElementById("link").style.display="none";
+      document.getElementById("main").style.display="none";
 
       createjs.Ticker.setPaused(false);
       createjs.Tween.get(about, {override:true}).call(addAnim,[0]).to({alpha:1}, 300, createjs.Ease.cubicIn);
@@ -3751,18 +3749,18 @@ function generateConditions(set,p) {
     nextOverlay.visible = true;
 
     createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:-canvas.height}, 600, createjs.Ease.cubicIn);
-    createjs.Tween.get(nextOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn).call(showLink);
+    createjs.Tween.get(nextOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn).call(showLearnLink);
 
-    function showLink() {
+    function showLearnLink() {
       rmAnim();
-      document.getElementById("link").style.display="block";
+      document.getElementById("learn").style.display="block";
     }
 
     function nextToStart() {
 
       closeNext.removeAllEventListeners();
 
-      document.getElementById("link").style.display="none";
+      document.getElementById("learn").style.display="none";
 
       createjs.Ticker.setPaused(false);
       createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicIn);
@@ -4080,7 +4078,7 @@ function generateConditions(set,p) {
 
       createjs.Ticker.setPaused(false);
       createjs.Tween.get(tutorialText2).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut).call(replaceText,[tutorialText2,centerX,1470,"Player one's goal is to make complete circles. Player two's goal is to make complete squares."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicIn);
-      createjs.Tween.get(tutorialText1).call(replaceText,[tutorialText1,centerX-100,1800,"Try making both:"]).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn);
+      createjs.Tween.get(tutorialText1).call(replaceText,[tutorialText1,centerX-100,1800,"Try making each:"]).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn);
       createjs.Tween.get(whiteCircle).to({alpha:0,x:centerX+210,y:canvas.height-215}).wait(1000).to({alpha:1}, 400, createjs.Ease.cubicIn);
       createjs.Tween.get(blackSquare).to({alpha:0,x:centerX+170,y:canvas.height-155}).wait(1000).to({alpha:1}, 400, createjs.Ease.cubicIn);
       createjs.Tween.get(whiteCheck).to({alpha:0,x:centerX+290,y:canvas.height-255}).wait(1200).to({alpha:.05}, 400, createjs.Ease.cubicIn);

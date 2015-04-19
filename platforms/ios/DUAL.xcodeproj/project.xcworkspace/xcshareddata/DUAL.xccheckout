@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>D5214E51-A4A9-4553-B1D3-36E2AE71F18F</string>
 	<key>IDESourceControlProjectName</key>
-	<string>project</string>
+	<string>DUAL</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>14F7B5F2B9FDDF6B73BEBB9E2B18766745DE8AD5</key>
 		<string>https://github.com/swndr/dual-cordova.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>platforms/ios/DUAL.xcodeproj/project.xcworkspace</string>
+	<string>platforms/ios/DUAL.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>14F7B5F2B9FDDF6B73BEBB9E2B18766745DE8AD5</key>

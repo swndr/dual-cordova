@@ -678,49 +678,41 @@ function generateConditions(set,p) {
 
     if (tl == 1) {
       gameObject.tl = 1;
-      TL.graphics.beginFill(white);
-      TL.graphics.drawRoundRectComplex(-radius,-radius,radius,radius,radius,0,0,0);
+      TL.graphics.beginFill(white).drawRoundRectComplex(-radius,-radius,radius,radius,radius,0,0,0);
       TL.name = "TL";
     } else {
       gameObject.tl = 0;
-      TL.graphics.beginFill(black);
-      TL.graphics.drawRoundRectComplex(-radius,-radius,radius,radius,0,0,0,0);
+      TL.graphics.beginFill(black).drawRoundRectComplex(-radius,-radius,radius,radius,0,0,0,0);
       TL.name = "TL";
     }
 
     if (tr == 1) {
       gameObject.tr = 1;
-      TR.graphics.beginFill(white);
-      TR.graphics.drawRoundRectComplex(0,-radius,radius,radius,0,radius,0,0);
+      TR.graphics.beginFill(white).drawRoundRectComplex(0,-radius,radius,radius,0,radius,0,0);
       TR.name = "TR";
     } else {
       gameObject.tr = 0;
-      TR.graphics.beginFill(black);
-      TR.graphics.drawRoundRectComplex(0,-radius,radius,radius,0,0,0,0);
+      TR.graphics.beginFill(black).drawRoundRectComplex(0,-radius,radius,radius,0,0,0,0);
       TR.name = "TR";
     }
 
     if (br == 1) {
       gameObject.br = 1;
-      BR.graphics.beginFill(white);
-      BR.graphics.drawRoundRectComplex(0,0,radius,radius,0,0,radius,0);
+      BR.graphics.beginFill(white).drawRoundRectComplex(0,0,radius,radius,0,0,radius,0);
       BR.name = "BR";
     } else {
       gameObject.br = 0;
-      BR.graphics.beginFill(black);
-      BR.graphics.drawRoundRectComplex(0,0,radius,radius,0,0,0,0);
+      BR.graphics.beginFill(black).drawRoundRectComplex(0,0,radius,radius,0,0,0,0);
       BR.name = "BR";
     }
 
     if (bl == 1) {
       gameObject.bl = 1;
-      BL.graphics.beginFill(white);
-      BL.graphics.drawRoundRectComplex(-radius,0,radius,radius,0,0,0,radius);
+      BL.graphics.beginFill(white).drawRoundRectComplex(-radius,0,radius,radius,0,0,0,radius);
       BL.name = "BL";
     } else {
       gameObject.bl = 0;
-      BL.graphics.beginFill(black);
-      BL.graphics.drawRoundRectComplex(-radius,0,radius,radius,0,0,0,0);
+      BL.graphics.beginFill(black).drawRoundRectComplex(-radius,0,radius,radius,0,0,0,0);
       BL.name = "BL";
     }
 

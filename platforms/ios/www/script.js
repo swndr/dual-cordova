@@ -169,6 +169,22 @@ function onDeviceReady() {
   var sequenceBox = new Box(416,920,704,1054,"#616060",black,"SEQUENCE");
   var actionsBox = new Box(1160,920,336,1054,"#F9F9F9",yellow,"ACTIONS","actionsBox");
 
+   buttonRow = 0;
+
+  for (var i = 0; i < 10; i++) {
+
+  if (!(i % 2)) {
+    var placeholder = new PlaceholderButton(34,110 + (buttonRow * (buttonSize + buttonMargin)));
+  } else {
+    var placeholder = new PlaceholderButton((34 + buttonSize + buttonMargin),110 + (buttonRow * (buttonSize + buttonMargin)));
+  }
+  
+  selectorsBox.addChild(placeholder);
+  
+  if (i % 2) { buttonRow++; }
+  
+  }
+
   var logicLabel = new createjs.Text("LOGIC", mediumLabelStyle, blue).set({x:168,y:820});
   logicLabel.textAlign = "center";
 
@@ -303,9 +319,12 @@ function generateConditions(set,p) {
       
       var rowSelector = new PositionButton("row",100,30,15,50,i,34,0);
       set.row.push(rowSelector);
+      selectorsBox.addChild(rowSelector);
+      rowSelector.visible = false;
       var colSelector = new PositionButton("col",30,100,50,15,i,(34 + buttonSize + buttonMargin),0);
       set.col.push(colSelector);
-
+      selectorsBox.addChild(colSelector);
+      colSelector.visible = false;
     }
 
     // shapes
@@ -331,7 +350,17 @@ function generateConditions(set,p) {
     for (i in set.shapeArrays) {
       var shapeSelector = new ShapeButton(set.shapeArrays[i][0],set.shapeArrays[i][1],set.shapeArrays[i][2],set.shapeArrays[i][3],0,0);
       set.shapes.push(shapeSelector);
+      selectorsBox.addChild(shapeSelector);
+      shapeSelector.visible = false;
     }
+
+    return set;
+  }
+
+
+  function loadSelectors(set,p,setToClear) {
+
+    createjs.Ticker.setPaused(false);
 
     shuffle(set.row);
     shuffle(set.col);
@@ -340,54 +369,22 @@ function generateConditions(set,p) {
     for (var i = 0; i < 10; i++) {
       if (i < 2) {
         set.all[i] = set.row.shift();
-        set.all[i].player = p;
       } else if (i >= 2 && i < 4) {
         set.all[i] = set.col.shift();
-        set.all[i].player = p;
       } else {
-        set.all[i] = set.shapes.shift();
-        set.all[i].player = p;
+        set.all[i] = set.shapes.shift(); 
       }
+        set.all[i].player = p;
+        set.all[i].visible = false;
     }
-
-    return set;
-  }
-
-
-  function replaceSelectors(selector,set) {
-
-    if (selector.name == "row") {
-      var replacement = set.row.splice(getRandomInt(0,set.row.length-1),1,selector)[0];
-    } else if (selector.name == "col") {
-      var replacement = set.col.splice(getRandomInt(0,set.col.length-1),1,selector)[0];
-    } else if (selector.name == "shape") {
-      var replacement = set.shapes.splice(getRandomInt(0,set.shapes.length-1),1,selector)[0];
-    }
-
-    replacement.visible = false;
-
-    if (replacement.parent == null) {
-      selectorsBox.addChild(replacement);
-    }
-
-    replacement.inSlot = false;
-    replacement.refresh = true;
-    return replacement;
-  }
-
-  function loadSelectors(set,setToClear) {
-
-    createjs.Ticker.setPaused(false);
 
     buttonRow = 0;
 
     for (var i = 0; i < 10; i++) {
 
-      if (arguments.length > 1) {
+      if (arguments.length > 2) {
         setToClear.all[i].visible = false;
       }
-
-      set.all[i].visible = true;
 
       animateDuration = getRandomInt(200,500);
       elasticOriginX = getRandomInt(-200,200);
@@ -411,18 +408,31 @@ function generateConditions(set,p) {
         set.all[i].originY = 110 + (buttonRow * (buttonSize + buttonMargin));
       }
 
-      if (arguments.length == 1) {
-        var placeholder = new PlaceholderButton(set.all[i].originX,set.all[i].originY);
-        selectorsBox.addChild(placeholder);
-      }
+      set.all[i].visible = true;
 
-      selectorsBox.addChild(set.all[i]);
       createjs.Tween.get(set.all[i], {override:true}).call(addAnim,[0]).to({rotation:0,x:set.all[i].originX,y:set.all[i].originY}, animateDuration, createjs.Ease.backOut).call(rmAnim);
 
       set.all[i].refresh = false;
 
       if (i % 2) { buttonRow++; }
     }
+  }
+
+  function replaceSelectors(selector,set) {
+
+    if (selector.name == "row") {
+      var replacement = set.row.splice(getRandomInt(0,set.row.length-1),1,selector)[0];
+    } else if (selector.name == "col") {
+      var replacement = set.col.splice(getRandomInt(0,set.col.length-1),1,selector)[0];
+    } else if (selector.name == "shape") {
+      var replacement = set.shapes.splice(getRandomInt(0,set.shapes.length-1),1,selector)[0];
+    }
+
+    replacement.visible = false;
+
+    replacement.inSlot = false;
+    replacement.refresh = true;
+    return replacement;
   }
 
   function refreshSelectors(setToClear,setToAdd) {
@@ -1051,14 +1061,18 @@ function generateConditions(set,p) {
   winOverlay.visible = false;
   confettiContainer.visible = false;
 
+  selectorsP1 = generateConditions(selectorsP1,1);
+  selectorsP2 = generateConditions(selectorsP2,2);
+  generateGameObjects(4);
+
   stage.addChild(board,winGrid,sequenceBox,selectorsBox,actionsBox,gameObjects,winOverlay,darkOverlay,confettiContainer);
 
   function loadGame(delay) {
 
-    for (var i = 0; i < 10; i++) {
-      selectorsP1[i] = null;
-      selectorsP2[i] = null;
-    }
+    // for (var i = 0; i < 10; i++) {
+    //   selectorsP1[i] = null;
+    //   selectorsP2[i] = null;
+    // }
 
     for (var i = 0; i < 16; i++) {
       sequence[i] = null;
@@ -1093,61 +1107,70 @@ function generateConditions(set,p) {
     actionsBox.visible = true;
     gameObjects.visible = true;
 
-    selectorsP1 = generateConditions(selectorsP1,1);
-    selectorsP2 = generateConditions(selectorsP2,2);
-    loadGameObjects(4,delay);
+    // selectorsP1 = generateConditions(selectorsP1,1);
+    // selectorsP2 = generateConditions(selectorsP2,2);
+    loadGameObjects(delay);
     stage.update();
   }
 
-  function loadGameObjects(gridSize,delay) {
+  function generateGameObjects(gridSize) {
 
-    gameObjects.removeAllChildren();
+    var startObjects = [[0,0,1,1],[0,0,1,1],[0,1,1,0],[0,1,1,0],[1,1,0,0],[1,1,0,0],[1,0,0,1],[1,0,0,1],[1,0,1,1],[0,1,1,1],[0,1,0,0],[1,0,0,0],[1,0,1,0],[1,0,1,0],[0,1,0,1],[0,1,0,1]];
+
+    for (var i = 0; i < (gridSize*gridSize); i++) {
+      var fourm = new GameObject(startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
+      objectsInPlay.push(fourm);
+      gameObjects.addChild(fourm);
+    }
+
+  }
+
+
+  function loadGameObjects(delay) {
 
     var row = 0;
     var column = 0;
 
-    var startObjects = shuffle([[0,0,1,1],[0,0,1,1],[0,1,1,0],[0,1,1,0],[1,1,0,0],[1,1,0,0],[1,0,0,1],[1,0,0,1],[1,0,1,1],[0,1,1,1],[0,1,0,0],[1,0,0,0],[1,0,1,0],[1,0,1,0],[0,1,0,1],[0,1,0,1]]);
+    shuffle(objectsInPlay);
 
-    for (var i = 0; i < (gridSize*gridSize); i++) {
+    for (var i = 0; i < objectsInPlay.length; i++) {
 
-      if (i/(row+1) == gridSize) { row++; column = 0; }
+      if (i/(row+1) == 4) { row++; column = 0; }
 
-      var fourm = new GameObject(startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
-      var tempX0 = fourm.children[0].x;
-      var tempY0 = fourm.children[0].y;
-      fourm.children[0].x = getRandomInt(-200,200);
-      fourm.children[0].y = getRandomInt(-200,200);
-      fourm.children[0].rotation = getRandomInt(-80,80);
-      var tempX1 = fourm.children[1].x;
-      var tempY1 = fourm.children[1].y;
-      fourm.children[1].x = getRandomInt(-200,200);
-      fourm.children[1].y = getRandomInt(-200,200);
-      fourm.children[1].rotation = getRandomInt(-80,80);
-      var tempX2 = fourm.children[2].x;
-      var tempY2 = fourm.children[2].y;
-      fourm.children[2].x = getRandomInt(-200,200);
-      fourm.children[2].y = getRandomInt(-200,200);
-      fourm.children[2].rotation = getRandomInt(-80,80);
-      var tempX3 = fourm.children[3].x;
-      var tempY3 = fourm.children[3].y;
-      fourm.children[3].x = getRandomInt(-200,200);
-      fourm.children[3].y = getRandomInt(-200,200);
-      fourm.children[3].rotation = getRandomInt(-80,80);
-      fourm.x = colVal(column,4,180);
-      fourm.y = rowVal(row,4,180,890);
-      fourm.id = i;
-      fourm.name = "gameObject";
-      fourm.complete = false;
+      var tempX0 = objectsInPlay[i].children[0].x;
+      var tempY0 = objectsInPlay[i].children[0].y;
+      objectsInPlay[i].children[0].x = getRandomInt(-200,200);
+      objectsInPlay[i].children[0].y = getRandomInt(-200,200);
+      objectsInPlay[i].children[0].rotation = getRandomInt(-80,80);
+      var tempX1 = objectsInPlay[i].children[1].x;
+      var tempY1 = objectsInPlay[i].children[1].y;
+      objectsInPlay[i].children[1].x = getRandomInt(-200,200);
+      objectsInPlay[i].children[1].y = getRandomInt(-200,200);
+      objectsInPlay[i].children[1].rotation = getRandomInt(-80,80);
+      var tempX2 = objectsInPlay[i].children[2].x;
+      var tempY2 = objectsInPlay[i].children[2].y;
+      objectsInPlay[i].children[2].x = getRandomInt(-200,200);
+      objectsInPlay[i].children[2].y = getRandomInt(-200,200);
+      objectsInPlay[i].children[2].rotation = getRandomInt(-80,80);
+      var tempX3 = objectsInPlay[i].children[3].x;
+      var tempY3 = objectsInPlay[i].children[3].y;
+      objectsInPlay[i].children[3].x = getRandomInt(-200,200);
+      objectsInPlay[i].children[3].y = getRandomInt(-200,200);
+      objectsInPlay[i].children[3].rotation = getRandomInt(-80,80);
+      objectsInPlay[i].x = colVal(column,4,180);
+      objectsInPlay[i].y = rowVal(row,4,180,890);
+      objectsInPlay[i].id = i;
+      objectsInPlay[i].name = "gameObject";
+      objectsInPlay[i].complete = false;
 
-      objectsInPlay.push(fourm);
-      gameObjects.addChild(fourm);
+      objectsInPlay[i].visible = true;
 
       column++;
 
-      createjs.Tween.get(fourm.children[0], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX0,y:tempY0}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
-      createjs.Tween.get(fourm.children[1], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX1,y:tempY1}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
-      createjs.Tween.get(fourm.children[2], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX2,y:tempY2}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
-      createjs.Tween.get(fourm.children[3], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX3,y:tempY3}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(objectsInPlay[i].children[0], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX0,y:tempY0}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(objectsInPlay[i].children[1], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX1,y:tempY1}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(objectsInPlay[i].children[2], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX2,y:tempY2}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
+      createjs.Tween.get(objectsInPlay[i].children[3], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX3,y:tempY3}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
 
     }
   }
@@ -1898,7 +1921,7 @@ function generateConditions(set,p) {
 
     if (wTurn == true) {
 
-      if (wTurns == 1) { loadSelectors(selectorsP2,selectorsP1); } else { refreshSelectors(selectorsP1,selectorsP2); }
+      if (wTurns == 1) { loadSelectors(selectorsP2,2,selectorsP1); } else { refreshSelectors(selectorsP1,selectorsP2); }
 
       wTurn = false;
       whiteTurn.visible = false;
@@ -2035,17 +2058,6 @@ function generateConditions(set,p) {
       confettiContainer.visible = false;
     }
 
-    for (i in objectsInPlay) {
-      objectsInPlay[i] = null;
-    }
-
-    objectsInPlay = [];
-
-    for (var i = 0; i < 10; i++) {
-      selectorsP1[i] = null;
-      selectorsP2[i] = null;
-    }
-
     selectorsBox.mouseEnabled = true;
     sequenceBox.mouseEnabled = true;
     actionsBox.mouseEnabled = true;
@@ -2053,18 +2065,19 @@ function generateConditions(set,p) {
 
     clearSequence();
 
-    var toClear = [];
-
-    for (var i = 0; i < selectorsBox.children.length; i++) {
-      if (selectorsBox.children[i].slotType != null) {
-        if (selectorsBox.children[i].slotType == "condition") {
-        toClear.push(selectorsBox.children[i]);
-        }
+    for (var i = 0; i < 10; i++) {
+        selectorsP1.all[i].visible = false;
+        if (wTurns >= 1) { selectorsP2.all[i].visible = false; }
+      if (i < 2) {
+        selectorsP1.row.push(selectorsP1.all[i]);
+        if (wTurns >= 1) { selectorsP2.row.push(selectorsP2.all[i]); }
+      } else if (i >= 2 && i < 4) {
+        selectorsP1.col.push(selectorsP1.all[i]);
+        if (wTurns >= 1) { selectorsP2.col.push(selectorsP2.all[i]); }
+      } else {
+        selectorsP1.shapes.push(selectorsP1.all[i]);
+        if (wTurns >= 1) { selectorsP2.shapes.push(selectorsP2.all[i]); }
       }
-    }
-
-    for (var i = 0; i < toClear.length; i++) {
-      selectorsBox.removeChild(toClear[i]);
     }
 
     winOverlay.visible = false;
@@ -2073,7 +2086,7 @@ function generateConditions(set,p) {
     loadGame(0);
     stage.update();
 
-    loadSelectors(selectorsP1);
+    loadSelectors(selectorsP1,1);
   }
 
   function menuHighlight() {
@@ -2103,11 +2116,6 @@ function generateConditions(set,p) {
       rmAnim();
       startOverlay.uncache();
 
-      for (i in objectsInPlay) {
-        objectsInPlay[i] = null;
-      }
-
-      objectsInPlay = [];
       menuLabel.alpha = 0;
 
       board.visible = false;
@@ -2119,18 +2127,19 @@ function generateConditions(set,p) {
 
       clearSequence();
 
-      var toClear = [];
-
-      for (var i = 0; i < selectorsBox.children.length; i++) {
-        if (selectorsBox.children[i].slotType != null) {
-          if (selectorsBox.children[i].slotType == "condition") {
-          toClear.push(selectorsBox.children[i]);
-          }
+      for (var i = 0; i < 10; i++) {
+          selectorsP1.all[i].visible = false;
+          if (wTurns >= 1) { selectorsP2.all[i].visible = false; }
+        if (i < 2) {
+          selectorsP1.row.push(selectorsP1.all[i]);
+          if (wTurns >= 1) { selectorsP2.row.push(selectorsP2.all[i]); }
+        } else if (i >= 2 && i < 4) {
+          selectorsP1.col.push(selectorsP1.all[i]);
+          if (wTurns >= 1) { selectorsP2.col.push(selectorsP2.all[i]); }
+        } else {
+          selectorsP1.shapes.push(selectorsP1.all[i]);
+          if (wTurns >= 1) { selectorsP2.shapes.push(selectorsP2.all[i]); }
         }
-      }
-
-      for (var i = 0; i < toClear.length; i++) {
-        selectorsBox.removeChild(toClear[i]);
       }
 
     }
@@ -3526,7 +3535,7 @@ function generateConditions(set,p) {
         tutorialNextButton.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
 
-        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,500,"You\'ll get a set of conditions to target shapes on the grid. Any you don\'t use will be available on your next turn."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
+        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,500,"You\'ll get a set of conditions to target shapes on the grid. Any you don\'t use will be available on your next turn."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1,1]);
         createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(400).to({y:900},100).to({alpha:1}, 100, createjs.Ease.cubicIn);
         createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,910,"NEXT"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[showSeq]).wait(0).call(rmAnim);
         createjs.Tween.get(startOverlay, {override:true}).wait(400).to({y:-224}, 600, createjs.Ease.cubicIn);
@@ -4182,7 +4191,7 @@ function playLearnAction() {
       actionsBox.mouseEnabled = true;
       menuButton.mouseEnabled = true;
 
-      loadSelectors(selectorsP1);
+      loadSelectors(selectorsP1,1);
     }   
   }
 } // end loadIntro

@@ -59,6 +59,8 @@ function onDeviceReady() {
   var andCount = 4;
   var orCount = 4;
 
+  var startObjects = [[0,0,1,1],[0,0,1,1],[0,1,1,0],[0,1,1,0],[1,1,0,0],[1,1,0,0],[1,0,0,1],[1,0,0,1],[1,0,1,1],[0,1,1,1],[0,1,0,0],[1,0,0,0],[1,0,1,0],[1,0,1,0],[0,1,0,1],[0,1,0,1]];
+
   var tutorialObjectsInPlay = [];
   var objectsInPlay = [];
 
@@ -559,6 +561,71 @@ function generateConditions(set,p) {
   actionsBox.addChild(placeholderTL,placeholderTR,placeholderBR,placeholderBL,placeholderFlipV,placeholderFlipH,placeholder90cc,placeholder90c,placeholder180cc);
   actionsBox.addChild(transformTL,transformTR,transformBR,transformBL,flipV,flipH,rotate90cc,rotate90c,rotate180cc);
 
+
+  function cleanGameObjects(obj,tl,tr,br,bl) {
+
+    var TL = obj.children[0];
+    var TR = obj.children[1];
+    var BR = obj.children[2];
+    var BL = obj.children[3];
+
+    if (tl == 1) {
+      obj.tl = 1;
+      TL.graphics
+      .clear()
+      .beginFill(white).drawRoundRectComplex(-radius,-radius,radius,radius,radius,0,0,0);
+      TL.name = "TL";
+    } else {
+      obj.tl = 0;
+      TL.graphics
+      .clear()
+      .beginFill(black).drawRoundRectComplex(-radius,-radius,radius,radius,0,0,0,0);
+      TL.name = "TL";
+    }
+
+    if (tr == 1) {
+      obj.tr = 1;
+      TR.graphics
+      .clear()
+      .beginFill(white).drawRoundRectComplex(0,-radius,radius,radius,0,radius,0,0);
+      TR.name = "TR";
+    } else {
+      obj.tr = 0;
+      TR.graphics
+      .clear()
+      .beginFill(black).drawRoundRectComplex(0,-radius,radius,radius,0,0,0,0);
+      TR.name = "TR";
+    }
+
+    if (br == 1) {
+      obj.br = 1;
+      BR.graphics
+      .clear()
+      .beginFill(white).drawRoundRectComplex(0,0,radius,radius,0,0,radius,0);
+      obj.name = "BR";
+    } else {
+      obj.br = 0;
+      BR.graphics
+      .clear()
+      .beginFill(black).drawRoundRectComplex(0,0,radius,radius,0,0,0,0);
+      BR.name = "BR";
+    }
+
+    if (bl == 1) {
+      obj.bl = 1;
+      BL.graphics
+      .clear()
+      .beginFill(white).drawRoundRectComplex(-radius,0,radius,radius,0,0,0,radius);
+      BL.name = "BL";
+    } else {
+      obj.bl = 0;
+      BL.graphics
+      .clear()
+      .beginFill(black).drawRoundRectComplex(-radius,0,radius,radius,0,0,0,0);
+      BL.name = "BL";
+    }
+
+  }
 
   // ----------------- CONSTRUCTORS --------------------
 
@@ -1069,11 +1136,6 @@ function generateConditions(set,p) {
 
   function loadGame(delay) {
 
-    // for (var i = 0; i < 10; i++) {
-    //   selectorsP1[i] = null;
-    //   selectorsP2[i] = null;
-    // }
-
     for (var i = 0; i < 16; i++) {
       sequence[i] = null;
     }
@@ -1107,15 +1169,11 @@ function generateConditions(set,p) {
     actionsBox.visible = true;
     gameObjects.visible = true;
 
-    // selectorsP1 = generateConditions(selectorsP1,1);
-    // selectorsP2 = generateConditions(selectorsP2,2);
     loadGameObjects(delay);
     stage.update();
   }
 
   function generateGameObjects(gridSize) {
-
-    var startObjects = [[0,0,1,1],[0,0,1,1],[0,1,1,0],[0,1,1,0],[1,1,0,0],[1,1,0,0],[1,0,0,1],[1,0,0,1],[1,0,1,1],[0,1,1,1],[0,1,0,0],[1,0,0,0],[1,0,1,0],[1,0,1,0],[0,1,0,1],[0,1,0,1]];
 
     for (var i = 0; i < (gridSize*gridSize); i++) {
       var fourm = new GameObject(startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
@@ -1124,7 +1182,6 @@ function generateConditions(set,p) {
     }
 
   }
-
 
   function loadGameObjects(delay) {
 
@@ -2065,6 +2122,10 @@ function generateConditions(set,p) {
 
     clearSequence();
 
+    for (i in objectsInPlay) {
+      cleanGameObjects(objectsInPlay[i],startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
+    }
+
     for (var i = 0; i < 10; i++) {
         selectorsP1.all[i].visible = false;
         if (wTurns >= 1) { selectorsP2.all[i].visible = false; }
@@ -2126,6 +2187,10 @@ function generateConditions(set,p) {
       darkOverlay.visible = false;
 
       clearSequence();
+
+      for (i in objectsInPlay) {
+        cleanGameObjects(objectsInPlay[i],startObjects[i][0],startObjects[i][1],startObjects[i][2],startObjects[i][3]);
+      }
 
       for (var i = 0; i < 10; i++) {
           selectorsP1.all[i].visible = false;

@@ -1175,10 +1175,25 @@ function generateConditions(set,p) {
     gameObjects.visible = true;
 
     flipV.visible = false;
+    flipV.x = 400;
+    flipV.y = -300;
+    flipV.rotation = getRandomInt(-80,80);
     flipH.visible = false;
+    flipH.x = 200;
+    flipH.y = -150;
+    flipH.rotation = getRandomInt(-80,80);
     rotate90cc.visible = false;
+    rotate90cc.x = 600;
+    rotate90cc.y = 20;
+    rotate90c.rotation = getRandomInt(-80,80);
     rotate90c.visible = false;
+    rotate90c.x = 400;
+    rotate90c.y = 500;
+    rotate90cc.rotation = getRandomInt(-80,80);
     rotate180cc.visible = false;
+    rotate180cc.x = 500;
+    rotate180cc.y = 700;
+    rotate180cc.rotation = getRandomInt(-80,80);
 
         for (var i = 0; i < actionsBox.children.length; i++) {
           if (actionsBox.children[i].type == "placeholder") {
@@ -2029,11 +2044,59 @@ function generateConditions(set,p) {
 
       if (steps == 2) {
 
+        if (viaTutorial == true) {
+          extendOverlay.visible = true;
+          selectorsBox.mouseEnabled = false;
+          sequenceBox.mouseEnabled = false;
+          actionsBox.mouseEnabled = false;
+          createjs.Tween.get(extendOverlay,{override:true}).call(addAnim,[0]).to({y:0}, 400, createjs.Ease.cubicIn);
+          createjs.Tween.get(extendText1,{override:true}).wait(400).to({alpha:1}, 400, createjs.Ease.cubicIn);
+          createjs.Tween.get(extendText2,{override:true}).wait(400).to({alpha:1}, 400, createjs.Ease.cubicIn);
+          createjs.Tween.get(extendButton,{override:true}).wait(400).to({alpha:1}, 400, createjs.Ease.cubicIn);
+          createjs.Tween.get(extendButtonLabel,{override:true}).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn).call(prepContinueGame);
+
+          function prepContinueGame() {
+            rmAnim();
+            extendButton.addEventListener("mousedown",highlightExtend);
+            extendButton.addEventListener("pressup",closeExtend);
+          }
+
+          function highlightExtend() {
+            extendButtonLabel.alpha = .5;
+            stage.update();
+          }
+
+          function closeExtend() {
+            extendButton.removeAllEventListeners();
+            createjs.Ticker.setPaused(false);
+
+            createjs.Tween.get(extendOverlay,{override:true}).call(addAnim,[0]).wait(200).to({y:-890}, 400, createjs.Ease.cubicOut);
+            createjs.Tween.get(extendText1,{override:true}).to({alpha:0}, 400, createjs.Ease.cubicOut);
+            createjs.Tween.get(extendText2,{override:true}).to({alpha:0}, 400, createjs.Ease.cubicOut);
+            createjs.Tween.get(extendButton,{override:true}).to({alpha:0}, 400, createjs.Ease.cubicOut);
+            createjs.Tween.get(extendButtonLabel,{override:true}).to({alpha:0}, 400, createjs.Ease.cubicOut).call(cleanExtend);
+
+            function cleanExtend() {
+              rmAnim();
+              extendOverlay.visible = false;
+              selectorsBox.mouseEnabled = true;
+              sequenceBox.mouseEnabled = true;
+              actionsBox.mouseEnabled = true;
+            }
+          }
+        }
+
         flipV.visible = true;
         flipH.visible = true;
         rotate90cc.visible = true;
         rotate90c.visible = true;
         rotate180cc.visible = true;
+
+        createjs.Tween.get(flipV, {override:true}).call(addAnim,[0]).to({rotation:0,x:34,y:524}, getRandomInt(200,500), createjs.Ease.backOut).call(rmAnim);
+        createjs.Tween.get(flipH, {override:true}).call(addAnim,[0]).to({rotation:0,x:(34 + buttonSize + buttonMargin),y:524}, getRandomInt(200,500), createjs.Ease.backOut).call(rmAnim);
+        createjs.Tween.get(rotate90cc, {override:true}).call(addAnim,[0]).to({rotation:0,x:34,y:740}, getRandomInt(200,500), createjs.Ease.backOut).call(rmAnim);
+        createjs.Tween.get(rotate90c, {override:true}).call(addAnim,[0]).to({rotation:0,x:(34 + buttonSize + buttonMargin),y:740}, getRandomInt(200,500), createjs.Ease.backOut).call(rmAnim);
+        createjs.Tween.get(rotate180cc, {override:true}).call(addAnim,[0]).to({rotation:0,x:34,y:(740 + buttonSize + buttonMargin)}, getRandomInt(200,500), createjs.Ease.backOut).call(rmAnim);
 
         for (var i = 0; i < actionsBox.children.length; i++) {
           if (actionsBox.children[i].type == "placeholder") {
@@ -2748,6 +2811,7 @@ function generateConditions(set,p) {
   var madeCircle = false;
   var madeSquare = false;
   var madeBoth = false;
+  var viaTutorial = false;
 
   var startOverlayBG = new createjs.Shape();
   startOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,canvas.height);
@@ -3020,6 +3084,36 @@ function generateConditions(set,p) {
   closeAboutArrow.graphics.lineTo(120,60);
   closeAbout.addChild(closeAboutButton,closeAboutArrow);
   closeAbout.alpha = 0;
+
+  // EXTEND
+
+  var extendOverlay = new createjs.Container().set({x:0,y:-890});
+
+  var extendOverlayBG = new createjs.Shape();
+  extendOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,890);
+
+  var extendText1 = new createjs.Text("Now you can build a two step sequence, and flip and rotate whole shapes.", "100 60px Avenir-Book", white).set({x:centerX,y:140});
+  extendText1.textAlign = "center";
+  extendText1.lineWidth = 1100;
+  extendText1.lineHeight = 80;
+  extendText1.alpha = 0;
+
+  var extendText2 = new createjs.Text("If you don't have the exact condition you want, maybe you can flip or rotate a similar shape?", "100 60px Avenir-Book", white).set({x:centerX,y:390});
+  extendText2.textAlign = "center";
+  extendText2.lineWidth = 1100;
+  extendText2.lineHeight = 80;
+  extendText2.alpha = 0;
+
+  var extendButton = new createjs.Shape().set({x:centerX-300,y:710});
+  extendButton.graphics.beginFill(green).drawRect(0,0,600,100);
+  extendButton.alpha = 0;
+  var extendButtonLabel = new createjs.Text("CONTINUE GAME", "100 60px Avenir-Heavy", black).set({x:centerX,y:720});
+  extendButtonLabel.textAlign = "center";
+  extendButtonLabel.alpha = 0;
+
+  extendOverlay.addChild(extendOverlayBG,extendText1,extendText2,extendButton,extendButtonLabel);
+  extendOverlay.visible = false;
+  stage.addChild(extendOverlay);
 
   // ABOUT SECTION
 
@@ -3640,53 +3734,23 @@ function generateConditions(set,p) {
       tutorialNextLabel.alpha = 0;
 
       createjs.Tween.get(tutorialText3, {override:true}).to({alpha:1}, 400, createjs.Ease.cubicIn);
-      createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:1}, 800, createjs.Ease.cubicIn).call(addButtonEvent,[showConditions]);
+      createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:1}, 800, createjs.Ease.cubicIn).call(addButtonEvent,[showControls]);
       createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:1}, 800, createjs.Ease.cubicIn).call(rmAnim);
 
-      function showConditions() {
+      function showControls() {
+
+        actionsBox.alpha = .1;
+        sequenceBox.alpha = .1;        
 
         tutorialNextButton.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
 
-        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,500,"You\'ll get a set of conditions to target shapes on the grid. Any you don\'t use will be available on your next turn."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1,1]);
+        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(400).call(replaceText,[tutorialText3,centerX,430,"Each turn you\'ll use conditions, logic and actions to target and transform shapes on the grid. Drag items to the sequence tray then hit play."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
         createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(400).to({y:900},100).to({alpha:1}, 100, createjs.Ease.cubicIn);
-        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,910,"NEXT"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[showSeq]).wait(0).call(rmAnim);
+        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,850,"START GAME"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[closeAndBegin]).wait(0).call(rmAnim);
         createjs.Tween.get(startOverlay, {override:true}).wait(400).to({y:-224}, 600, createjs.Ease.cubicIn);
-
-        createjs.Tween.get(sequenceBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(actionsBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-
-      }
-
-      function showSeq() {
-
-        tutorialNextButton.removeAllEventListeners();
-        createjs.Ticker.setPaused(false);
-
-        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,500,"Drop conditions and actions here then hit play. You can build longer sequences after each turn, up to four steps."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut);
-        
-        createjs.Tween.get(selectorsBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(sequenceBox, {override:true}).to({alpha:1}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(actionsBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-
-        createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn).call(addButtonEvent,[showActions]);
-        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
-
-      }
-
-      function showActions() {
-
-        tutorialNextButton.removeAllEventListeners();
-        createjs.Ticker.setPaused(false);
-
-        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(200).call(replaceText,[tutorialText3,centerX,450,"As well as switching between black and white segments, you can flip and rotate whole shapes. If you don't have a condition you need, see if flipping or rotating shapes helps!"]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut);
-        
-        createjs.Tween.get(selectorsBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(sequenceBox, {override:true}).to({alpha:.1}, 600, createjs.Ease.cubicIn);
-        createjs.Tween.get(actionsBox, {override:true}).to({alpha:1}, 600, createjs.Ease.cubicIn);
-
-        createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn).call(addButtonEvent,[closeAndBegin]);
-        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).call(replaceText,[tutorialNextLabel,centerX,910,"START GAME"]).wait(800).to({alpha:1}, 400, createjs.Ease.cubicIn).call(rmAnim);
+        createjs.Tween.get(sequenceBox, {override:true}).wait(1000).to({alpha:1}, 600, createjs.Ease.cubicIn);
+        createjs.Tween.get(actionsBox, {override:true}).wait(1200).to({alpha:1}, 600, createjs.Ease.cubicIn);
 
       }
 
@@ -3717,6 +3781,7 @@ function generateConditions(set,p) {
         function removeTutorial() {
           rmAnim();
           menuButton.mouseEnabled = true;
+          viaTutorial = true;
           startOverlay.visible = false;
           startOverlayBG.graphics
           .clear()
@@ -4281,6 +4346,8 @@ function playLearnAction() {
   // BEGIN GAME
 
   function beginGame(event) {
+
+    viaTutorial = true; // change this
 
     learn.removeAllEventListeners();
     start.removeAllEventListeners();

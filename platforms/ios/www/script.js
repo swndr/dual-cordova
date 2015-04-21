@@ -196,7 +196,7 @@ function onDeviceReady() {
   var orCountLabel = new createjs.Text(andCount, "bold 25px Avenir-Heavy", blue).set({x:237,y:1010});
   orCountLabel.textAlign = "center";
 
-  selectorsBox.addChild(logicLabel,andCountLabel,orCountLabel);
+  selectorsBox.addChild(logicLabel);
 
   var clearButton = new createjs.Shape().set({x:96,y:928});
   clearButton.graphics.beginFill("#616060").beginStroke(lightGray).setStrokeStyle(4).drawRoundRect(0,0,246,76,10);
@@ -507,8 +507,14 @@ function generateConditions(set,p) {
 
   for (var i = 0; i < 4; i++) {
       var andLogic = new LogicButton("AND",34,876);
+      andLogic.count = i;
       var orLogic = new LogicButton("OR",(34 + buttonSize + buttonMargin),876);
+      orLogic.count = i;
       selectorsBox.addChild(andLogic,orLogic);
+      if (i < 3) {
+        andLogic.visible = false;
+        orLogic.visible = false;
+      }
   }
 
   // ACTION ITEMS
@@ -659,7 +665,7 @@ function generateConditions(set,p) {
         hLabel.alpha = .6;
       var vLabel = new createjs.Text(i, lightLabelStyle, white);
         vLabel.x = gridLeft - labelMargin;
-        vLabel.y = (gridTop-18) + (i*gridSpacing);
+        vLabel.y = (gridTop-19) + (i*gridSpacing);
         vLabel.alpha = .6;
       gridContainer.addChild(hLabel);
       gridContainer.addChild(vLabel);
@@ -1344,6 +1350,11 @@ function generateConditions(set,p) {
     } else if (item.type == "logic") {
 
       if (pos.slot == 1 || pos.slot == 5 || pos.slot == 9 || pos.slot == 13) { 
+        if (item.name == "AND") {
+          if (selectorsBox.getChildByName("AND") != null) {selectorsBox.getChildByName("AND").visible = true; }
+        } else if (item.name == "OR") {
+          if (selectorsBox.getChildByName("OR") != null) {selectorsBox.getChildByName("OR").visible = true; }
+        }
         sequenceBox.addChild(item);
         item.x = pos.x; 
         item.y = pos.y; 
@@ -1381,10 +1392,13 @@ function generateConditions(set,p) {
     if (item.name == "AND") {
       andCount++;
       andCountLabel.text = andCount;
-      console.log(andCount);
+      item.visible = false;
+      if (selectorsBox.getChildByName("AND") != null) {selectorsBox.getChildByName("AND").visible = true; }
     } else if (item.name == "OR") {
       orCount++;
       orCountLabel.text = orCount;
+      item.visible = false;
+      if (selectorsBox.getChildByName("OR") != null) {selectorsBox.getChildByName("OR").visible = true; }
     }
 
     stage.update();
@@ -1453,6 +1467,19 @@ function generateConditions(set,p) {
           .drawRoundRect(0,0,160,160,5);
         }
     }
+
+    for (var i = 0; i < selectorsBox.children.length; i++) {
+      if (selectorsBox.children[i].name == "AND") {
+        selectorsBox.children[i].visible = false;
+      }
+
+      if (selectorsBox.children[i].name == "OR") {
+        selectorsBox.children[i].visible = false;
+      }
+    }
+
+    selectorsBox.getChildByName("AND").visible = true;
+    selectorsBox.getChildByName("OR").visible = true;
 
     playCount = 0;
     sequenceReady();
@@ -1616,7 +1643,7 @@ function generateConditions(set,p) {
    
       } else if (ruleSet.length == 1) {
 
-        if (ruleSet[0](objectsInPlay[i])) {
+        if (ruleSet[0](objectsInPlay[i]) && ruleSet[0].logic != true) {
           targets.push(objectsInPlay[i]);
           createjs.Tween.get(objectsInPlay[i], {override:true}).call(addAnim,[0]).to({alpha:1,}, 300, createjs.Ease.cubicIn).call(rmAnim);
         } else {
@@ -1669,6 +1696,7 @@ function generateConditions(set,p) {
         } else {
           ruleComponents = function(a,b) {if (a || b) {return true;}}
         }
+        ruleComponents.logic = true;
     }
 
     return ruleComponents;
@@ -4218,6 +4246,12 @@ function playLearnAction() {
   // BEGIN GAME
 
   function beginGame(event) {
+
+    learn.removeAllEventListeners();
+    start.removeAllEventListeners();
+    next.removeAllEventListeners();
+    about.removeAllEventListeners();
+    sound.removeAllEventListeners();
 
     if (soundOn == true) { 
       tutorialSound.stop();

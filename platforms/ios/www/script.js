@@ -1175,11 +1175,11 @@ function generateConditions(set,p) {
     gameObjects.visible = true;
 
     flipV.visible = false;
-    flipV.x = 400;
-    flipV.y = -300;
+    flipV.x = 600;
+    flipV.y = -400;
     flipV.rotation = getRandomInt(-80,80);
     flipH.visible = false;
-    flipH.x = 200;
+    flipH.x = 800;
     flipH.y = -150;
     flipH.rotation = getRandomInt(-80,80);
     rotate90cc.visible = false;
@@ -3747,7 +3747,7 @@ function generateConditions(set,p) {
 
         createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(400).call(replaceText,[tutorialText3,centerX,430,"Each turn you\'ll use conditions, logic and actions to target and transform shapes on the grid. Drag items to the sequence tray then hit play."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
         createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(400).to({y:900},100).to({alpha:1}, 100, createjs.Ease.cubicIn);
-        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,850,"START GAME"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[closeAndBegin]).wait(0).call(rmAnim);
+        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,850,"START GAME"]).to({alpha:1}, 400, createjs.Ease.cubicIn).call(addButtonEvent,[closeAndBegin]).wait(0).call(rmAnim);
         createjs.Tween.get(startOverlay, {override:true}).wait(400).to({y:-224}, 600, createjs.Ease.cubicIn);
         createjs.Tween.get(sequenceBox, {override:true}).wait(1000).to({alpha:1}, 600, createjs.Ease.cubicIn);
         createjs.Tween.get(actionsBox, {override:true}).wait(1200).to({alpha:1}, 600, createjs.Ease.cubicIn);
@@ -4347,7 +4347,7 @@ function playLearnAction() {
 
   function beginGame(event) {
 
-    viaTutorial = true; // change this
+    viaTutorial = false;
 
     learn.removeAllEventListeners();
     start.removeAllEventListeners();

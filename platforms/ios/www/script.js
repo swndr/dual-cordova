@@ -543,26 +543,26 @@ function generateConditions(set,p) {
   var flipV = new FlipButton(40,30,90,30,65,60,65,70,40,100,90,100,34,524);
   flipV.name = "fV";
   flipV.func = flipVertical;
-  var placeholderFlipV = new PlaceholderButton(flipV.x,flipV.y);
+  var placeholderFlipV = new PlaceholderButton(flipV.x,flipV.y,true);
   var flipH = new FlipButton(30,40,30,90,60,65,70,65,100,40,100,90,(34 + buttonSize + buttonMargin),524);
   flipH.name = "fH";
   flipH.func = flipHorizontal;
-  var placeholderFlipH = new PlaceholderButton(flipH.x,flipH.y);
+  var placeholderFlipH = new PlaceholderButton(flipH.x,flipH.y,true);
 
   // rotate buttons
 
   var rotate90cc = new RotateButton(90,"cc",34,740);
   rotate90cc.name = "r90cc";
   rotate90cc.func = rt90cc;
-  var placeholder90cc = new PlaceholderButton(rotate90cc.x,rotate90cc.y);
+  var placeholder90cc = new PlaceholderButton(rotate90cc.x,rotate90cc.y,true);
   var rotate90c = new RotateButton(90,"c",(34 + buttonSize + buttonMargin),740);
   rotate90c.name = "r90c";
   rotate90c.func = rt90c;
-  var placeholder90c = new PlaceholderButton(rotate90c.x,rotate90c.y);
+  var placeholder90c = new PlaceholderButton(rotate90c.x,rotate90c.y,true);
   var rotate180cc = new RotateButton(180,"cc",34,(740 + buttonSize + buttonMargin));
   rotate180cc.name = "r180cc";
   rotate180cc.func = rt180cc;
-  var placeholder180cc = new PlaceholderButton(rotate180cc.x,rotate180cc.y);
+  var placeholder180cc = new PlaceholderButton(rotate180cc.x,rotate180cc.y,true);
 
   actionsBox.addChild(placeholderTL,placeholderTR,placeholderBR,placeholderBL,placeholderFlipV,placeholderFlipH,placeholder90cc,placeholder90c,placeholder180cc);
   actionsBox.addChild(transformTL,transformTR,transformBR,transformBL,flipV,flipH,rotate90cc,rotate90c,rotate180cc);
@@ -808,17 +808,24 @@ function generateConditions(set,p) {
 
   // GENERATE BUTTONS
 
-  function PlaceholderButton(x,y) {
+  function PlaceholderButton(x,y,locked) {
 
-    var button = new createjs.Shape();
-    button.graphics.beginFill(lightGray);
-    button.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
-    button.alpha = .4;
-    button.type = "placeholder";
+    var button = new createjs.Container();
+
+    var buttonBG = new createjs.Shape();
+    buttonBG.graphics.beginFill(lightGray);
+    buttonBG.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
+    buttonBG.alpha = .4;
+    button.addChild(buttonBG);
+
+    if (locked) {
+      var lock = new Padlock(50,56);
+      button.addChild(lock);
+    }
 
     button.x = x;
     button.y = y;
-    button.cache(0,0,buttonSize,buttonSize);
+    button.type = "placeholder";
 
     return button;
   }
@@ -1166,6 +1173,20 @@ function generateConditions(set,p) {
     selectorsBox.visible = true;
     actionsBox.visible = true;
     gameObjects.visible = true;
+
+    flipV.visible = false;
+    flipH.visible = false;
+    rotate90cc.visible = false;
+    rotate90c.visible = false;
+    rotate180cc.visible = false;
+
+        for (var i = 0; i < actionsBox.children.length; i++) {
+          if (actionsBox.children[i].type == "placeholder") {
+            if (actionsBox.children[i].children[1] != null) {
+              actionsBox.children[i].children[1].visible = true;
+            }
+          }
+        }
 
     loadGameObjects(delay);
     stage.update();
@@ -2007,6 +2028,20 @@ function generateConditions(set,p) {
     } else {
 
       if (steps == 2) {
+
+        flipV.visible = true;
+        flipH.visible = true;
+        rotate90cc.visible = true;
+        rotate90c.visible = true;
+        rotate180cc.visible = true;
+
+        for (var i = 0; i < actionsBox.children.length; i++) {
+          if (actionsBox.children[i].type == "placeholder") {
+            if (actionsBox.children[i].children[1] != null) {
+              actionsBox.children[i].children[1].visible = false;
+            }
+          }
+        }
 
         dropZoneContainer.removeChild(dropZoneContainer.getChildByName(2));
         dropZoneContainer.removeChild(dropZoneContainer.getChildByName(3));

@@ -110,6 +110,7 @@ function onDeviceReady() {
   var winGrid = new createjs.Shape();
   winGrid.graphics.beginFill(pink);
   winGrid.graphics.rect(0,0,canvas.width,890);
+  winGrid.cache(0,0,canvas.width,890);
   winGrid.alpha = 0;
 
   // BUILD GRID
@@ -1146,6 +1147,7 @@ function generateConditions(set,p) {
     }
 
     gameOver = false;
+    gameObjects.uncache();
 
     steps = 2;
     wTurns = 0;
@@ -1264,6 +1266,7 @@ function generateConditions(set,p) {
       createjs.Tween.get(objectsInPlay[i].children[3], {override:true}).wait(delay).call(addAnim,[0]).to({rotation:0,x:tempX3,y:tempY3}, getRandomInt(400,900), createjs.Ease.backOut).call(rmAnim);
 
     }
+    window.setTimeout(cacheGameObjects,1500);
   }
 
   // ------------- INTERACTION ------------------
@@ -1561,7 +1564,7 @@ function generateConditions(set,p) {
   }
 
   function play() {
-
+    gameObjects.uncache();
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
     actionsBox.mouseEnabled = false;
@@ -1930,6 +1933,7 @@ function generateConditions(set,p) {
 
     var winBG = new createjs.Shape();
     winBG.graphics.beginFill(pink).drawRect(0,0,canvas.width,(canvas.height-890));
+    winBG.cache(0,0,canvas.width,(canvas.height-890));
 
     var newGameBanner = new createjs.Shape().set({x:0,y:920});
     newGameBanner.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,200);
@@ -2189,7 +2193,7 @@ function generateConditions(set,p) {
       }
 
     }
-
+    window.setTimeout(cacheGameObjects,500);
     stage.update();
   }
 
@@ -2320,6 +2324,7 @@ function generateConditions(set,p) {
 
   var darkOverlayBG = new createjs.Shape();
   darkOverlayBG.graphics.beginFill(black).drawRect(0,0,canvas.width,canvas.height);
+  darkOverlayBG.cache(0,0,canvas.width,canvas.height);
   darkOverlayBG.alpha = .95;
 
   var restart = new createjs.Shape().set({x:0,y:400});
@@ -2815,6 +2820,7 @@ function generateConditions(set,p) {
 
   var startOverlayBG = new createjs.Shape();
   startOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,canvas.height);
+  startOverlayBG.cache(0,0,canvas.width,canvas.height);
 
   var logo = new createjs.Container();
 
@@ -3091,6 +3097,7 @@ function generateConditions(set,p) {
 
   var extendOverlayBG = new createjs.Shape();
   extendOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,890);
+  extendOverlayBG.cache(0,0,canvas.width,890);
 
   var extendText1 = new createjs.Text("Now you can build a two step sequence, and flip and rotate whole shapes.", "100 60px Avenir-Book", white).set({x:centerX,y:140});
   extendText1.textAlign = "center";
@@ -3146,6 +3153,7 @@ function generateConditions(set,p) {
   aLink.textAlign = "center";
 
   aboutOverlay.addChild(aboutOverlayBG,aTitle1,aTitle2,aSubTitle1,aSubTitle2,aLink);
+  aboutOverlay.cache(0,0,canvas.width,1000);
   aboutOverlay.visible = false;
 
   // NEXT SECTION
@@ -3205,6 +3213,7 @@ function generateConditions(set,p) {
   nConclusion.textAlign = "center";
 
   nextOverlay.addChild(nextOverlayBG,closeNext,nTitle,nSubTitle,nSelection,nSelectionText,nSequence,nSeqText,nLoop,nLoopText,nButton,nConclusion);
+  nextOverlay.cache(0,0,canvas.width,canvas.height);
   nextOverlay.visible = false;
 
   startOverlay.visible = false;
@@ -3683,7 +3692,6 @@ function generateConditions(set,p) {
     tutorialNextButton.removeAllEventListeners();
     closeTutorial.removeAllEventListeners();
     createjs.Ticker.setPaused(false);
-
     sequence = [];
     loadGame(200);
 
@@ -3711,7 +3719,7 @@ function generateConditions(set,p) {
       logo.removeAllChildren();
 
       tutorialText3.visible = true;
-
+      startOverlayBG.uncache();
       startOverlayBG.graphics
       .clear()
       .beginFill(green).drawRect(0,0,canvas.width,(canvas.height-890));
@@ -3875,12 +3883,12 @@ function generateConditions(set,p) {
     next.alpha = 1;
 
     nextOverlay.visible = true;
-
-    createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:-canvas.height}, 600, createjs.Ease.cubicIn);
-    createjs.Tween.get(nextOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn).call(showLearnLink);
+    startOverlay.cache(0,0,canvas.width,canvas.height);
+    createjs.Tween.get(startOverlay, {override:true}).to({y:-canvas.height}, 600, createjs.Ease.cubicIn);
+    createjs.Tween.get(nextOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn).wait(100).call(showLearnLink);
 
     function showLearnLink() {
-      rmAnim();
+      createjs.Ticker.setPaused(true);
       document.getElementById("learn").style.display="block";
     }
 
@@ -3891,10 +3899,12 @@ function generateConditions(set,p) {
       document.getElementById("learn").style.display="none";
 
       createjs.Ticker.setPaused(false);
-      createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:0}, 600, createjs.Ease.cubicIn);
-      createjs.Tween.get(nextOverlay, {override:true}).to({y:canvas.height}, 600, createjs.Ease.cubicIn).call(cleanNext);
+      createjs.Tween.get(startOverlay, {override:true}).to({y:0}, 600, createjs.Ease.cubicIn);
+      createjs.Tween.get(nextOverlay, {override:true}).to({y:canvas.height}, 600, createjs.Ease.cubicIn).wait(100).call(cleanNext);
 
       function cleanNext() {
+
+        startOverlay.uncache();
 
         about.addEventListener("mousedown",highlightButton);
         about.addEventListener("pressup",showAbout);
@@ -3911,7 +3921,7 @@ function generateConditions(set,p) {
         next.addEventListener("mousedown",highlightButton);
         next.addEventListener("pressup",showNext);
 
-        rmAnim();
+        createjs.Ticker.setPaused(true);
         closeNext.alpha = 1;
         nextOverlay.visible = false;
         stage.update();
@@ -4437,11 +4447,19 @@ function endTween() {
     window.setTimeout(endTween,500);
     } else {
     createjs.Ticker.setPaused(true);
-    //console.log("ticker paused");
     endTweenCheck = 0;
     }
   }
 }
+
+function cacheGameObjects() {
+  if (animations.length < 1) {
+    gameObjects.cache(0,0,canvas.width,890);
+    } else {
+    window.setTimeout(cacheGameObjects,250);
+  }
+}
+
 
 // ------------- UTILITIES -----------------
 

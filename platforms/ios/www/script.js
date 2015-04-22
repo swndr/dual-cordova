@@ -83,7 +83,7 @@ function onDeviceReady() {
   createjs.Touch.enable(stage);
   stage.enableMouseOver(20);
 
-  createjs.Ticker.setFPS(60);
+  createjs.Ticker.setFPS(40);
   createjs.Ticker.addEventListener("tick", tick);
   createjs.Ticker.setPaused(true);
 
@@ -272,78 +272,136 @@ function onDeviceReady() {
 
   var trays = new createjs.Container();
   var dropZoneContainer = new createjs.Container();
+  var lockTrays = new createjs.Container();
 
-  sequenceBox.addChild(trays,dropZoneContainer);
+  sequenceBox.addChild(trays,dropZoneContainer,lockTrays);
 
-  function sequenceTrayStart() {
+  for (var i = 0; i < 8; i++) {
 
-    trays.removeAllChildren();
-    dropZoneContainer.removeAllChildren();
-
-    for (var i = 0; i < 8; i++) {
-
-      if (i < 2) {
-        if (!(i % 2)) {
-          var sequenceTray = new Tray(36,(117 + (i*100)),442,160,black,green,1,i,"selectors");
-        } else {
-          var sequenceTray = new Tray(508,(17 + (i*100)),160,160,black,yellow,1,i,"actions"); 
-        }
-      } else {
-        if (!(i % 2)) {
-          var sequenceTray = new Tray(36,(117 + (i*100)),442,160,black,lightGray,.7,i,"selectors");
-        } else {
-          var sequenceTray = new Tray(508,(17 + (i*100)),160,160,black,lightGray,.7,i,"actions"); 
-        }
-      }
-
-      trays.addChild(sequenceTray);
+    if (!(i % 2)) {
+      var sequenceTray = new Tray(36,(117 + (i*100)),442,160,black,green,1,i,"selectors",i);
+    } else {
+      var sequenceTray = new Tray(508,(17 + (i*100)),160,160,black,yellow,1,i,"actions",i); 
     }
 
-    buildSequenceStep(1,0);
-    buildNextSequenceLocked(2);
-    buildSequenceLocked(3);
-    buildSequenceLocked(4);
+    if (i > 1) {
+      if (!(i % 2)) {
+        var lockTray = new Tray(36,(117 + (i*100)),442,160,black,lightGray,.7,i,"lock",i);
+        var lockStatus = new createjs.Container().set({x:80,y:(i*100) + 178});
+        var padlock = new Padlock(5,10);
+        var lockText = new createjs.Text("LOCKED", "100 22px Avenir-Book", white).set({x:60,y:5});
+        lockStatus.addChild(padlock,lockText);
+        lockStatus.alpha = .5;
+        lockStatus.name = i;
+        lockTrays.addChild(lockTray,lockStatus);
+      } else {
+        var lockTray = new Tray(508,(17 + (i*100)),160,160,black,lightGray,.7,i,"lock",i); 
+        lockTrays.addChild(lockTray);
+      }
+    }
 
-    var requiredCondition = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:90,y:150});
-    requiredCondition.alpha = .1;
+    if (i < 4) {
+      var selectorZone0 = new DropZone(50,(((i+1) * 200) - 68),green,.25,"condition",(i*4));
+      var selectorZone1 = new DropZone((50 + (buttonSize*2) + ((buttonMargin+4)*2)),(((i+1) * 200) - 68),green,.25,"condition",(i*4)+2);
+      var logicZone = new DropZone((50 + buttonSize + (buttonMargin+4)),(((i+1) * 200) - 68),blue,.25,"logic",(i*4)+1);
+      var actionZone = new DropZone(523,(((i+1) * 200) - 68),yellow,.25,"action",(i*4)+3);
+    }
 
-    var requiredAction = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:563,y:150});
-    requiredAction.alpha = .1;
-
-    dropZoneContainer.addChild(requiredCondition,requiredAction);
-
-  }
-
-  function buildSequenceStep(row,startSlot) {
-
-    var selectorZone0 = new DropZone(50,((row * 200) - 68),green,.25,"condition",startSlot);
-    var logicZone = new DropZone((50 + buttonSize + (buttonMargin+4)),((row * 200) - 68),blue,.25,"logic",startSlot+1);
-    var selectorZone1 = new DropZone((50 + (buttonSize*2) + ((buttonMargin+4)*2)),((row * 200) - 68),green,.25,"condition",startSlot+2);
-    var actionZone = new DropZone(523,((row * 200) - 68),yellow,.25,"action",startSlot+3);
+    trays.addChild(sequenceTray);
     dropZoneContainer.addChild(selectorZone0,logicZone,selectorZone1,actionZone);
+
   }
 
-  function buildNextSequenceLocked(row) {
+  var requiredCondition = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:90,y:150});
+  requiredCondition.alpha = .1;
 
-    var lockStatus = new createjs.Container().set({x:80,y:((row * 200) - 20)});
-    var padlock = new Padlock(5,10);
-    var lockText = new createjs.Text("LOCKED UNTIL NEXT TURN", "100 22px Avenir-Book", white).set({x:60,y:5});
-    lockStatus.addChild(padlock,lockText);
-    lockStatus.name = row;
-    dropZoneContainer.addChild(lockStatus);
- 
+  var requiredAction = new createjs.Text("*","bold 100px Avenir-Heavy", white).set({x:563,y:150});
+  requiredAction.alpha = .1;
+
+  dropZoneContainer.addChild(requiredCondition,requiredAction);
+
+  function sequenceTray1() {
+
+    for (var i = 2; i < 16; i++) {
+
+      if (i > 1 && i < 8) {
+        trays.getChildByName(i).visible = false;
+        lockTrays.getChildByName(i).visible = true;
+      }
+
+      if (i > 3) {
+        dropZoneContainer.getChildAt(i).visible =  false;
+      }
+    }
+
+    lockTrays.getChildAt(1).visible = true;
+    lockTrays.getChildAt(1).alpha = 1;
+    lockTrays.getChildAt(1).getChildAt(1).text = "LOCKED UNTIL NEXT TURN";
+    lockTrays.getChildAt(4).visible = true;
+    lockTrays.getChildAt(4).alpha = .5;
+    lockTrays.getChildAt(4).getChildAt(1).text = "LOCKED";
+    lockTrays.getChildAt(7).visible = true;
+    lockTrays.getChildAt(7).alpha = .5;
+    lockTrays.getChildAt(7).getChildAt(1).text = "LOCKED";
   }
 
-  function buildSequenceLocked(row) {
+  function sequenceTray2() {
 
-    var lockStatus = new createjs.Container().set({x:80,y:((row * 200) - 20)});
-    var padlock = new Padlock(5,10);
-    var lockText = new createjs.Text("LOCKED", "100 22px Avenir-Book", white).set({x:60,y:5});
-    lockStatus.addChild(padlock,lockText);
-    lockStatus.alpha = .5;
-    lockStatus.name = row;
-    dropZoneContainer.addChild(lockStatus);
+    for (var i = 2; i < 16; i++) {
 
+      if (i > 1 && i < 4) {
+        trays.getChildByName(i).visible = true;
+        lockTrays.getChildByName(i).visible = false;
+      }
+
+      lockTrays.getChildAt(1).visible = false;
+
+      if (i > 3 && i < 8) {
+        dropZoneContainer.getChildAt(i).visible =  true;
+      }
+    }
+
+    lockTrays.getChildAt(4).alpha = 1;
+    lockTrays.getChildAt(4).getChildAt(1).text = "LOCKED UNTIL NEXT TURN";
+    lockTrays.getChildAt(7).alpha = .5;
+    lockTrays.getChildAt(7).getChildAt(1).text = "LOCKED";
+  }
+
+  function sequenceTray3() {
+
+    for (var i = 2; i < 16; i++) {
+
+      if (i > 3 && i < 6) {
+        trays.getChildByName(i).visible = true;
+        lockTrays.getChildByName(i).visible = false;
+      }
+
+      lockTrays.getChildAt(4).visible = false;
+
+      if (i > 7 && i < 12) {
+        dropZoneContainer.getChildAt(i).visible =  true;
+      }
+    }
+
+    lockTrays.getChildAt(7).alpha = 1;
+    lockTrays.getChildAt(7).getChildAt(1).text = "LOCKED UNTIL NEXT TURN";
+  }
+
+  function sequenceTray4() {
+
+    for (var i = 2; i < 16; i++) {
+
+      if (i > 5 && i < 8) {
+        trays.getChildByName(i).visible = true;
+        lockTrays.getChildByName(i).visible = false;
+      }
+
+      lockTrays.getChildAt(7).visible = false;
+
+      if (i > 11 && i < 16) {
+        dropZoneContainer.getChildAt(i).visible =  true;
+      }
+    }
   }
 
 // SELECTOR ITEMS
@@ -798,7 +856,7 @@ function generateConditions(set,p) {
     return box;
   }
 
-  function Tray(x,y,w,h,bgColor,borderColor,alpha,order,type) {
+  function Tray(x,y,w,h,bgColor,borderColor,alpha,order,type,name) {
 
     var tray = new createjs.Shape();
     tray.graphics.beginStroke(borderColor).setStrokeStyle(8).beginFill(bgColor);
@@ -809,6 +867,7 @@ function generateConditions(set,p) {
     tray.alpha = alpha
     tray.tray = order;
     tray.type = type;
+    tray.name = name;
 
     return tray;
   }
@@ -1213,7 +1272,7 @@ function generateConditions(set,p) {
     actionsBox.getChildByName("bg").graphics.beginFill("#F9F9F9");
     actionsBox.getChildByName("bg").graphics.drawRoundRect(0,0,336,1054,10);
 
-    sequenceTrayStart();
+    sequenceTray1();
 
     board.visible = true;
     sequenceBox.visible = true;
@@ -2128,66 +2187,17 @@ function generateConditions(set,p) {
           }
         }
 
-        dropZoneContainer.removeChild(dropZoneContainer.getChildByName(2));
-        dropZoneContainer.removeChild(dropZoneContainer.getChildByName(3));
-
-        trays.getChildAt(2).graphics
-        .clear()
-        .beginStroke(green).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,160,5);
-        trays.getChildAt(2).alpha = 1;
-      
-        trays.getChildAt(3).graphics
-        .clear()
-        .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,160,5);
-        trays.getChildAt(3).alpha = 1;
-
-        buildSequenceStep(2,4);
-        buildNextSequenceLocked(3);
-
+        sequenceTray2();
         steps = 4;
 
       } else if (steps == 4) {
 
-        dropZoneContainer.removeChild(dropZoneContainer.getChildByName(3));
-        dropZoneContainer.removeChild(dropZoneContainer.getChildByName(4));
-
-        trays.getChildAt(4).graphics
-        .clear()
-        .beginStroke(green).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,160,5);
-        trays.getChildAt(4).alpha = 1;
-      
-        trays.getChildAt(5).graphics
-        .clear()
-        .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,160,5);
-        trays.getChildAt(5).alpha = 1;
-
-        buildSequenceStep(3,8);
-        buildNextSequenceLocked(4);
-
+        sequenceTray3();
         steps = 6;
 
       } else if (steps == 6) {
 
-        dropZoneContainer.removeChild(dropZoneContainer.getChildByName(4));
-
-        trays.getChildAt(6).graphics
-        .clear()
-        .beginStroke(green).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,442,160,5);
-        trays.getChildAt(6).alpha = 1;
-      
-        trays.getChildAt(7).graphics
-        .clear()
-        .beginStroke(yellow).setStrokeStyle(8).beginFill(black)
-        .drawRoundRect(0,0,160,160,5);
-        trays.getChildAt(7).alpha = 1;
-
-        buildSequenceStep(4,12);
-
+        sequenceTray4();
         steps = 8;
 
       }

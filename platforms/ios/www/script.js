@@ -106,11 +106,14 @@ function onDeviceReady() {
   bg.graphics.beginFill("#AAA5A5");
   bg.graphics.rect(0,0,canvas.width,890);
   bg.cache(0,0,canvas.width,890);
+  bg.mouseEnabled = false;
+  bg.tickEnabled = false;
 
   var winGrid = new createjs.Shape();
   winGrid.graphics.beginFill(pink);
   winGrid.graphics.rect(0,0,canvas.width,890);
   winGrid.cache(0,0,canvas.width,890);
+  winGrid.mouseEnabled = false;
   winGrid.alpha = 0;
 
   // BUILD GRID
@@ -154,6 +157,7 @@ function onDeviceReady() {
 
   var winBG = new createjs.Shape();
   winBG.graphics.beginFill(pink).drawRect(0,0,canvas.width,(canvas.height-890));
+  winBG.mouseEnabled = false;
   winBG.cache(0,0,canvas.width,(canvas.height-890));
 
   var newGameBanner = new createjs.Shape().set({x:0,y:920});
@@ -203,6 +207,7 @@ function onDeviceReady() {
     }
     confetti.alpha = .7;
     confetti.cache(-r/2,-r/2,r*2,r*2);
+    confetti.mouseEnabled = false;
     confettiContainer.addChild(confetti);
   }
 
@@ -756,6 +761,8 @@ function generateConditions(set,p) {
     }
 
     gridContainer.addChild(grid);
+    gridContainer.mouseEnabled = false;
+    gridContainer.tickEnabled = false;
     grid.cache(0,0,canvas.width,gridHeight);
 
     for (var i = 0; i < gridSize; i++) {
@@ -823,6 +830,7 @@ function generateConditions(set,p) {
     }
 
     gameObject.addChild(TL,TR,BR,BL);
+    gameObject.mouseEnabled = false;
 
     return gameObject;
 
@@ -839,10 +847,14 @@ function generateConditions(set,p) {
     bg.graphics.beginFill(bgColor);
     bg.graphics.drawRoundRect(0,0,w,h,10);
     bg.name = "bg";
+    bg.mouseEnabled = false;
+    bg.tickEnabled = false;
 
     var header = new createjs.Shape();
     header.graphics.beginFill(color);
     header.graphics.drawRoundRectComplex(0,0,w,76,10,10,0,0);
+    header.mouseEnabled = false;
+    header.tickEnabled = false;
     header.cache(0,0,w,76);
     var label = new createjs.Text(title, lightLabelStyle, white);
     label.textAlign = "center";
@@ -861,6 +873,7 @@ function generateConditions(set,p) {
     var tray = new createjs.Shape();
     tray.graphics.beginStroke(borderColor).setStrokeStyle(8).beginFill(bgColor);
     tray.graphics.drawRoundRect(0,0,w,h,5);
+    tray.mouseEnabled = false;
 
     tray.x = x;
     tray.y = y;
@@ -878,6 +891,7 @@ function generateConditions(set,p) {
     dz.graphics.beginFill(color);
     dz.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
     dz.cache(0,0,buttonSize,buttonSize);
+    dz.tickEnabled = false;
     
     dz.x = x;
     dz.y = y;
@@ -902,6 +916,8 @@ function generateConditions(set,p) {
     lockBase.graphics.drawRoundRect(0,0,30,30,3);
     
     icon.addChild(lock,lockBase);
+    icon.mouseEnabled = false;
+    icon.tickEnabled = false;
     icon.cache(-5,-20,40,55);
     icon.x = x;
     icon.y = y;
@@ -931,6 +947,8 @@ function generateConditions(set,p) {
     button.x = x;
     button.y = y;
     button.type = "placeholder";
+    button.mouseEnabled = false;
+    button.tickEnabled = false;
 
     return button;
   }
@@ -971,6 +989,7 @@ function generateConditions(set,p) {
     posButton.inSlot = false;
     posButton.refresh = true;
     posButton.cache(0,0,buttonSize,buttonSize);
+    posButton.tickEnabled = false;
 
     return posButton;
   }
@@ -1046,6 +1065,7 @@ function generateConditions(set,p) {
     shapeButton.inSlot = false;
     shapeButton.refresh = true;
     shapeButton.cache(0,0,buttonSize,buttonSize);
+    shapeButton.tickEnabled = false;
 
     return shapeButton;
 
@@ -1078,6 +1098,7 @@ function generateConditions(set,p) {
     logicButton.y = y;
     logicButton.name = label;
     logicButton.cache(0,0,buttonSize,buttonSize);
+    logicButton.tickEnabled = false;
 
     return logicButton;
   }
@@ -1114,6 +1135,7 @@ function generateConditions(set,p) {
     transformButton.x = x;
     transformButton.y = y;
     transformButton.cache(0,0,buttonSize,buttonSize);
+    transformButton.tickEnabled = false;
 
     return transformButton;
   }
@@ -1180,6 +1202,7 @@ function generateConditions(set,p) {
     rotateButton.x = x;
     rotateButton.y = y;
     rotateButton.cache(0,0,buttonSize,buttonSize);
+    rotateButton.tickEnabled = false;
 
     return rotateButton;
   }
@@ -1218,6 +1241,7 @@ function generateConditions(set,p) {
     flipButton.x = x;
     flipButton.y = y;
     flipButton.cache(0,0,buttonSize,buttonSize);
+    flipButton.tickEnabled = false;
 
     return flipButton;
   }
@@ -1281,25 +1305,25 @@ function generateConditions(set,p) {
     gameObjects.visible = true;
 
     flipV.visible = false;
-    flipV.x = 600;
+    flipV.x = 200;
     flipV.y = -400;
-    flipV.rotation = getRandomInt(-80,80);
+    flipV.rotation = getRandomInt(-100,100);
     flipH.visible = false;
-    flipH.x = 800;
+    flipH.x = 200;
     flipH.y = -150;
-    flipH.rotation = getRandomInt(-80,80);
+    flipH.rotation = getRandomInt(-100,100);
     rotate90cc.visible = false;
-    rotate90cc.x = 600;
+    rotate90cc.x = 150;
     rotate90cc.y = 20;
-    rotate90c.rotation = getRandomInt(-80,80);
+    rotate90c.rotation = getRandomInt(-100,100);
     rotate90c.visible = false;
-    rotate90c.x = 400;
+    rotate90c.x = 350;
     rotate90c.y = 500;
-    rotate90cc.rotation = getRandomInt(-80,80);
+    rotate90cc.rotation = getRandomInt(-100,100);
     rotate180cc.visible = false;
-    rotate180cc.x = 500;
+    rotate180cc.x = 300;
     rotate180cc.y = 700;
-    rotate180cc.rotation = getRandomInt(-80,80);
+    rotate180cc.rotation = getRandomInt(-100,100);
 
     for (var i = 0; i < actionsBox.children.length; i++) {
       if (actionsBox.children[i].type == "placeholder") {
@@ -2239,6 +2263,8 @@ function generateConditions(set,p) {
       gameSound.play({ numberOfLoops: "infinite" }); 
     }
 
+    viaTutorial = false;
+
     restart.removeAllEventListeners();
     quit.removeAllEventListeners();
     soundOption.removeAllEventListeners();
@@ -2354,6 +2380,7 @@ function generateConditions(set,p) {
   var darkOverlayBG = new createjs.Shape();
   darkOverlayBG.graphics.beginFill(black).drawRect(0,0,canvas.width,canvas.height);
   darkOverlayBG.cache(0,0,canvas.width,canvas.height);
+  darkOverlayBG.mouseEnabled = false;
   darkOverlayBG.alpha = .95;
 
   var restart = new createjs.Shape().set({x:0,y:400});
@@ -2849,6 +2876,8 @@ function generateConditions(set,p) {
 
   var startOverlayBG = new createjs.Shape();
   startOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,canvas.height);
+  startOverlayBG.tickEnabled = false;
+  startOverlayBG.mouseEnabled = false;
   startOverlayBG.cache(0,0,canvas.width,canvas.height);
 
   var logo = new createjs.Container();
@@ -2948,10 +2977,12 @@ function generateConditions(set,p) {
 
   var tutorialBG = new createjs.Shape().set({x:0,y:1000});
   tutorialBG.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,canvas.height-1000);
+  tutorialBG.mouseEnabled = false;
   tutorialBG.cache(0,0,canvas.width,canvas.height-1000);
   tutorialBG.alpha = 0;
   var tutorialTray = new createjs.Shape().set({x:0,y:1000});
   tutorialTray.graphics.beginFill("#616060").drawRect(0,0,canvas.width,400);
+  tutorialTray.mouseEnabled = false;
   tutorialTray.cache(0,0,canvas.width,400);
   tutorialTray.alpha = 0;
 
@@ -3156,6 +3187,8 @@ function generateConditions(set,p) {
 
   var extendOverlayBG = new createjs.Shape();
   extendOverlayBG.graphics.beginFill(green).drawRect(0,0,canvas.width,890);
+  extendOverlayBG.mouseEnabled = false;
+  extendOverlayBG.tickEnabled = false;
   extendOverlayBG.cache(0,0,canvas.width,890);
 
   var extendText1 = new createjs.Text("Now you can build a two step sequence, and flip and rotate whole shapes.", "100 60px Avenir-Book", white).set({x:centerX,y:140});
@@ -3187,6 +3220,8 @@ function generateConditions(set,p) {
 
   var aboutOverlayBG = new createjs.Shape();
   aboutOverlayBG.graphics.beginFill(blue).drawRect(0,0,canvas.width,1000);
+  aboutOverlayBG.mouseEnabled = false;
+  aboutOverlayBG.tickEnabled = false;
 
   var aTitle1 = new createjs.Text("Design + Code: Sam Wander","400 60px Avenir-Heavy", white).set({x:centerX,y:150});
   aTitle1.lineWidth = 1000;
@@ -3221,6 +3256,8 @@ function generateConditions(set,p) {
 
   var nextOverlayBG = new createjs.Shape();
   nextOverlayBG.graphics.beginFill(blue).drawRect(0,0,canvas.width,canvas.height);
+  nextOverlayBG.mouseEnabled = false;
+  nextOverlayBG.tickEnabled = false;
 
   var closeNext = new createjs.Container().set({x:centerX-60,y:100});
   var closeNextButton = new createjs.Shape();
@@ -3323,8 +3360,8 @@ function generateConditions(set,p) {
     playButtonLearn.removeAllEventListeners();
     closeAbout.alpha = 0;
 
+    logo.visible = true;
     manualTransforms(1);
-
     logo.y = 700;
     logo.alpha = 1;
 
@@ -3699,7 +3736,7 @@ function generateConditions(set,p) {
 
     function handleBeginGame() {
 
-      logo.removeAllChildren();
+      logo.visible = false;
 
       tutorialText3.visible = true;
       startOverlayBG.uncache();
@@ -3736,9 +3773,9 @@ function generateConditions(set,p) {
         tutorialNextButton.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
 
-        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(400).call(replaceText,[tutorialText3,centerX,430,"Each turn you\'ll use conditions, logic and actions to target and transform shapes on the grid. Drag items to the sequence tray then hit play."]).wait(400).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
+        createjs.Tween.get(tutorialText3, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(400).call(replaceText,[tutorialText3,centerX,430,"Each turn you\'ll use conditions, logic and actions to target and transform shapes on the grid. Drag items to the sequence tray then hit play."]).wait(200).to({alpha:1}, 400, createjs.Ease.cubicOut).call(loadSelectors,[selectorsP1]);
         createjs.Tween.get(tutorialNextButton, {override:true}).to({alpha:0}, 100, createjs.Ease.cubicIn).wait(400).to({y:900},100).to({alpha:1}, 100, createjs.Ease.cubicIn);
-        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(600).call(replaceText,[tutorialNextLabel,centerX,850,"START GAME"]).to({alpha:1}, 400, createjs.Ease.cubicIn).call(addButtonEvent,[closeAndBegin]).wait(0).call(rmAnim);
+        createjs.Tween.get(tutorialNextLabel, {override:true}).to({alpha:0}, 200, createjs.Ease.cubicIn).wait(400).call(replaceText,[tutorialNextLabel,centerX,850,"START GAME"]).to({alpha:1}, 600, createjs.Ease.cubicIn).call(addButtonEvent,[closeAndBegin]).wait(0).call(rmAnim);
         createjs.Tween.get(startOverlay, {override:true}).wait(400).to({y:-224}, 600, createjs.Ease.cubicIn);
         createjs.Tween.get(sequenceBox, {override:true}).wait(1000).to({alpha:1}, 600, createjs.Ease.cubicIn);
         createjs.Tween.get(actionsBox, {override:true}).wait(1200).to({alpha:1}, 600, createjs.Ease.cubicIn);
@@ -3888,6 +3925,8 @@ function generateConditions(set,p) {
       function cleanNext() {
 
         startOverlay.uncache();
+
+        manualTransforms(1);
 
         about.addEventListener("mousedown",highlightButton);
         about.addEventListener("pressup",showAbout);

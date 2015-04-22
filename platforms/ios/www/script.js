@@ -127,27 +127,67 @@ function onDeviceReady() {
   menuButton.addEventListener("mousedown",menuHighlight);
   menuButton.addEventListener("pressup",showMenu);
   menuButton.name = "new";
+  menuButton.cache(0,0,300,100);
   var menuLabel = new createjs.Text("MENU", mediumLabelStyle, white).set({x:185,y:70});
   menuLabel.textAlign = "center";
   menuLabel.alpha = 0;
 
   var whiteTurn = new createjs.Shape().set({x:0,y:(445-iconRadius)});
   whiteTurn.graphics.beginFill(pink).drawRect(0,0,25,iconRadius*2);
+  whiteTurn.cache(0,0,25,iconRadius*2);
   whiteTurn.visible = true;
   var whiteIcon = new createjs.Shape().set({x:80,y:445});
   whiteIcon.graphics.beginFill(white).drawCircle(0,0,iconRadius,iconRadius);
-  var whiteScore = new createjs.Text(wScore, largeLabelStyle, white).set({x:160,y:425});
-  whiteScore.textAlign = "left";
+  whiteIcon.cache(-iconRadius,-iconRadius,iconRadius*2,iconRadius*2);
 
   var blackTurn = new createjs.Shape().set({x:(canvas.width - 25),y:(445 - iconRadius)});
   blackTurn.graphics.beginFill(pink).drawRect(0,0,25,iconRadius*2);
+  blackTurn.cache(0,0,25,iconRadius*2);
   blackTurn.visible = false;
   var blackIcon = new createjs.Shape().set({x:(canvas.width - iconRadius - 80),y:(445 - iconRadius)});
   blackIcon.graphics.beginFill(black).drawRect(0,0,iconRadius*2,iconRadius*2);
-  var blackScore = new createjs.Text(bScore, largeLabelStyle, black).set({x:(canvas.width - 160),y:425});
-  blackScore.textAlign = "right";
+  blackIcon.cache(0,0,iconRadius*2,iconRadius*2);
 
   board.addChild(menuButton,menuLabel,whiteTurn,whiteIcon,blackTurn,blackIcon);
+
+  // WIN OVERLAY
+
+  var winBG = new createjs.Shape();
+  winBG.graphics.beginFill(pink).drawRect(0,0,canvas.width,(canvas.height-890));
+  winBG.cache(0,0,canvas.width,(canvas.height-890));
+
+  var newGameBanner = new createjs.Shape().set({x:0,y:920});
+  newGameBanner.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,200);
+
+  var newGameBannerText = new createjs.Text("NEW GAME","bold 80px Avenir-Heavy",green).set({x:centerX,y:960});
+  newGameBannerText.textAlign = "center";
+
+  var victory = new createjs.Text("","bold 100px Avenir-Heavy",white).set({x:centerX,y:40});
+  victory.textAlign = "center";
+
+  var whiteTitle = new createjs.Text("WHITE /","bold 55px Avenir-Heavy",white).set({x:70,y:250});
+  whiteTitle.textAlign = "left";
+  var whiteTurns = new createjs.Text("","100 55px Avenir-Book",white).set({x:70,y:350});
+  whiteTurns.textAlign = "left"; 
+  var whiteConditions = new createjs.Text("","100 55px Avenir-Book",white).set({x:70,y:450});
+  whiteConditions.textAlign = "left"; 
+  var whiteActions = new createjs.Text("","100 55px Avenir-Book",white).set({x:70,y:550});
+  whiteActions.textAlign = "left";
+  var whiteComplete = new createjs.Text("","100 55px Avenir-Book",white).set({x:70,y:650});
+  whiteComplete.textAlign = "left"; 
+
+  var blackTitle = new createjs.Text("BLACK /","bold 55px Avenir-Heavy",black).set({x:(canvas.width/2)+60,y:250});
+  blackTitle.textAlign = "left";
+  var blackTurns = new createjs.Text("","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:350});
+  blackTurns.textAlign = "left"; 
+  var blackConditions = new createjs.Text("","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:450});
+  blackConditions.textAlign = "left"; 
+  var blackActions = new createjs.Text("","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:550});
+  blackActions.textAlign = "left";
+  var blackComplete = new createjs.Text("","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:650});
+  blackComplete.textAlign = "left";
+
+  winOverlay.addChild(winBG,newGameBanner,newGameBannerText,victory,whiteTitle,whiteTurns,whiteConditions,whiteActions,whiteComplete,blackTitle,blackTurns,blackConditions,blackActions,blackComplete);
 
   // CONFETTI
 
@@ -204,6 +244,7 @@ function onDeviceReady() {
   clearButton.addEventListener("mousedown",clearHighlight);
   clearButton.addEventListener("pressup",clearSequence);
   clearButton.name = "clear";
+  clearButton.cache(-4,-4,254,84);
   var clearLabel = new createjs.Text("CLEAR", largeLabelStyle, white).set({x:219,y:940});
   clearLabel.textAlign = "center";
 
@@ -744,6 +785,7 @@ function generateConditions(set,p) {
     var header = new createjs.Shape();
     header.graphics.beginFill(color);
     header.graphics.drawRoundRectComplex(0,0,w,76,10,10,0,0);
+    header.cache(0,0,w,76);
     var label = new createjs.Text(title, lightLabelStyle, white);
     label.textAlign = "center";
     label.x = w/2;
@@ -776,6 +818,7 @@ function generateConditions(set,p) {
     var dz = new createjs.Shape();
     dz.graphics.beginFill(color);
     dz.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
+    dz.cache(0,0,buttonSize,buttonSize);
     
     dz.x = x;
     dz.y = y;
@@ -800,6 +843,7 @@ function generateConditions(set,p) {
     lockBase.graphics.drawRoundRect(0,0,30,30,3);
     
     icon.addChild(lock,lockBase);
+    icon.cache(-5,-20,40,55);
     icon.x = x;
     icon.y = y;
 
@@ -817,6 +861,7 @@ function generateConditions(set,p) {
     buttonBG.graphics.beginFill(lightGray);
     buttonBG.graphics.drawRoundRect(0,0,buttonSize,buttonSize,5);
     buttonBG.alpha = .4;
+    buttonBG.cache(0,0,buttonSize,buttonSize);
     button.addChild(buttonBG);
 
     if (locked) {
@@ -1197,13 +1242,13 @@ function generateConditions(set,p) {
     rotate180cc.y = 700;
     rotate180cc.rotation = getRandomInt(-80,80);
 
-        for (var i = 0; i < actionsBox.children.length; i++) {
-          if (actionsBox.children[i].type == "placeholder") {
-            if (actionsBox.children[i].children[1] != null) {
-              actionsBox.children[i].children[1].visible = true;
-            }
-          }
+    for (var i = 0; i < actionsBox.children.length; i++) {
+      if (actionsBox.children[i].type == "placeholder") {
+        if (actionsBox.children[i].children[1] != null) {
+          actionsBox.children[i].children[1].visible = true;
         }
+      }
+    }
 
     loadGameObjects(delay);
     stage.update();
@@ -1916,14 +1961,14 @@ function generateConditions(set,p) {
     }
 
     if (color == 0) {
-      var winner = "BLACK WINS";
-      var victoryColor = black;
+      victory.text = "BLACK WINS";
+      victory.color = black;
     } else if (color == 1) {
-      var winner = "WHITE WINS";
-      var victoryColor = white;
+      victory.text = "WHITE WINS";
+      victory.color = white;
     } else {
-      var winner = "DRAW";
-      var victoryColor = lightGray;
+      victory.text = "DRAW";
+      victory.color = lightGray;
     }
 
     winOverlay.visible = true;
@@ -1931,44 +1976,19 @@ function generateConditions(set,p) {
     winOverlay.y = canvas.height;
     confettiContainer.visible = true;
 
-    var winBG = new createjs.Shape();
-    winBG.graphics.beginFill(pink).drawRect(0,0,canvas.width,(canvas.height-890));
-    winBG.cache(0,0,canvas.width,(canvas.height-890));
-
-    var newGameBanner = new createjs.Shape().set({x:0,y:920});
-    newGameBanner.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,200);
     newGameBanner.addEventListener("mousedown",newGameBannerHighlight);
     newGameBanner.addEventListener("pressup",confirmNewGame);
 
-    var newGameBannerText = new createjs.Text("NEW GAME","bold 80px Avenir-Heavy",green).set({x:centerX,y:960});
-    newGameBannerText.textAlign = "center";
+    whiteTurns.text = wTurns + " TURNS";
+    whiteConditions.text = wConditions + " CONDITIONS USED";
+    whiteActions.text = wActions + " ACTIONS USED";
+    whiteComplete.text = wComplete + " COMPLETED CIRCLES";
 
-    var victory = new createjs.Text(winner,"bold 100px Avenir-Heavy",victoryColor).set({x:centerX,y:40});
-    victory.textAlign = "center";
+    blackTurns.text = bTurns + " TURNS";
+    blackConditions.text = bConditions + " CONDITIONS USED";
+    blackActions.text = bActions + " ACTIONS USED";
+    blackComplete.text = bComplete + " COMPLETED SQUARES";
 
-    var whiteTitle = new createjs.Text("WHITE /","bold 55px Avenir-Heavy",white).set({x:70,y:250});
-    whiteTitle.textAlign = "left";
-    var whiteTurns = new createjs.Text(wTurns + " TURNS","100 55px Avenir-Book",white).set({x:70,y:350});
-    whiteTurns.textAlign = "left"; 
-    var whiteConditions = new createjs.Text(wConditions + " CONDITIONS USED","100 55px Avenir-Book",white).set({x:70,y:450});
-    whiteConditions.textAlign = "left"; 
-    var whiteActions = new createjs.Text(wActions + " ACTIONS USED","100 55px Avenir-Book",white).set({x:70,y:550});
-    whiteActions.textAlign = "left";
-    var whiteComplete = new createjs.Text(wComplete + " COMPLETED CIRCLES","100 55px Avenir-Book",white).set({x:70,y:650});
-    whiteComplete.textAlign = "left"; 
-
-    var blackTitle = new createjs.Text("BLACK /","bold 55px Avenir-Heavy",black).set({x:(canvas.width/2)+60,y:250});
-    blackTitle.textAlign = "left";
-    var blackTurns = new createjs.Text(bTurns + " TURNS","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:350});
-    blackTurns.textAlign = "left"; 
-    var blackConditions = new createjs.Text(bConditions + " CONDITIONS USED","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:450});
-    blackConditions.textAlign = "left"; 
-    var blackActions = new createjs.Text(bActions + " ACTIONS USED","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:550});
-    blackActions.textAlign = "left";
-    var blackComplete = new createjs.Text(bComplete + " COMPLETED SQUARES","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:650});
-    blackComplete.textAlign = "left";
-
-    winOverlay.addChild(winBG,newGameBanner,newGameBannerText,victory,whiteTitle,whiteTurns,whiteConditions,whiteActions,whiteComplete,blackTitle,blackTurns,blackConditions,blackActions,blackComplete);
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
     actionsBox.mouseEnabled = false;
@@ -1991,9 +2011,7 @@ function generateConditions(set,p) {
       newGameBanner.alpha = .9;
       stage.update(); 
     }
-
   }
-
 
   function nextTurn() {
 
@@ -2220,6 +2238,7 @@ function generateConditions(set,p) {
 
     if (winOverlay.visible == true) {
       createjs.Ticker.setPaused(false);
+      newGameBanner.removeAllEventListeners();
       createjs.Tween.get(winGrid, {override:true}).call(addAnim,[0]).to({alpha:0}, 200, createjs.Ease.cubicInOut);
       createjs.Tween.get(winOverlay, {override:true}).to({y:canvas.height}, 300, createjs.Ease.cubicInOut).call(rmAnim);
       confettiContainer.visible = false;
@@ -2824,12 +2843,35 @@ function generateConditions(set,p) {
 
   var logo = new createjs.Container();
 
+  var D = new GameObject(0,1,1,0).set({x:centerX-450,y:0});
+  D.scaleX = 1.8;
+  D.scaleY = 1.8;
+  tutorialObjectsInPlay.push(D);
+
+  var U = new GameObject(0,0,1,1).set({x:centerX-150,y:0});
+  U.scaleX = 1.8;
+  U.scaleY = 1.8;
+  tutorialObjectsInPlay.push(U);
+
+  var A = new GameObject(1,1,0,0).set({x:centerX+150,y:0});
+  A.scaleX = 1.8;
+  A.scaleY = 1.8;
+  tutorialObjectsInPlay.push(A);
+
+  var L = new GameObject(0,1,0,0).set({x:centerX+450,y:0});
+  L.scaleX = 1.8;
+  L.scaleY = 1.8;
+  tutorialObjectsInPlay.push(L);
+
+  logo.addChild(D,U,A,L);
+
   var tagline = new createjs.Text("DUAL IS A GAME ABOUT COMPUTATION","bold 50px Avenir-Heavy",black).set({x:centerX,y:900});
   tagline.textAlign = "center";
 
   var learn = new createjs.Container().set({x:centerX,y:1200});
   var learnButton = new createjs.Shape().set({x:-200,y:-60});
   learnButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  learnButton.cache(0,0,400,200);
   learnButton.alpha = 0.1;
   var learnText = new createjs.Text("LEARN","bold 60px Avenir-Heavy",white).set({x:0,y:0});
   learnText.textAlign = "center";
@@ -2839,6 +2881,7 @@ function generateConditions(set,p) {
   var start = new createjs.Container().set({x:centerX,y:1450});
   var startButton = new createjs.Shape().set({x:-200,y:-60});
   startButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  startButton.cache(0,0,400,200);
   startButton.alpha = 0.1;
   var startText = new createjs.Text("PLAY","bold 60px Avenir-Heavy",white).set({x:0,y:0});
   startText.textAlign = "center";
@@ -2849,6 +2892,7 @@ function generateConditions(set,p) {
   var next = new createjs.Container().set({x:centerX,y:1700});
   var nextButton = new createjs.Shape().set({x:-200,y:-60});
   nextButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  nextButton.cache(0,0,400,200);
   nextButton.alpha = 0.1;
   var nextText = new createjs.Text("NEXT","bold 60px Avenir-Heavy",white).set({x:0,y:0});
   nextText.textAlign = "center";
@@ -2858,6 +2902,7 @@ function generateConditions(set,p) {
   var about = new createjs.Container().set({x:100,y:80});
   var aboutButton = new createjs.Shape().set({x:-150,y:-70});
   aboutButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  aboutButton.cache(0,0,400,200);
   aboutButton.alpha = 0.1;
   var aboutText = new createjs.Text("ABOUT","100 40px Avenir-Book",white).set({x:0,y:0});
   aboutText.textAlign = "left";
@@ -2867,6 +2912,7 @@ function generateConditions(set,p) {
   var sound = new createjs.Container().set({x:canvas.width-100,y:80});
   var soundButton = new createjs.Shape().set({x:-250,y:-70});
   soundButton.graphics.beginFill(green).drawRect(0,0,400,200);
+  soundButton.cache(0,0,400,200);
   soundButton.alpha = 0.1;
   var soundText = new createjs.Text("MUTE","100 40px Avenir-Book",white).set({x:0,y:0});
   soundText.textAlign = "right";
@@ -2880,6 +2926,7 @@ function generateConditions(set,p) {
   var closeTutorial = new createjs.Container().set({x:100,y:100});
   var closeButton = new createjs.Shape();
   closeButton.graphics.beginFill(green).drawRect(-25,-25,125,125);
+  closeButton.cache(-25,-25,125,125);
   var closeX = new createjs.Shape();
   closeX.graphics.beginStroke(white).setStrokeStyle(20,"round");
   closeX.graphics.moveTo(0,0);
@@ -2891,9 +2938,11 @@ function generateConditions(set,p) {
 
   var tutorialBG = new createjs.Shape().set({x:0,y:1000});
   tutorialBG.graphics.beginFill("#EAEAEA").drawRect(0,0,canvas.width,canvas.height-1000);
+  tutorialBG.cache(0,0,canvas.width,canvas.height-1000);
   tutorialBG.alpha = 0;
   var tutorialTray = new createjs.Shape().set({x:0,y:1000});
   tutorialTray.graphics.beginFill("#616060").drawRect(0,0,canvas.width,400);
+  tutorialTray.cache(0,0,canvas.width,400);
   tutorialTray.alpha = 0;
 
   var tutorialText1 = new createjs.Text("DUAL is a two player game about sequential thinking.", "100 60px Avenir-Book", black).set({x:centerX,y:1150});
@@ -3243,8 +3292,6 @@ function generateConditions(set,p) {
     madeSquare = false;
     madeBoth = false;
 
-    tutorialObjectsInPlay = [];
-    logo.removeAllChildren();
     clearSequenceLearn();
 
     andCheck.visible = false;
@@ -3266,29 +3313,10 @@ function generateConditions(set,p) {
     playButtonLearn.removeAllEventListeners();
     closeAbout.alpha = 0;
 
-    var D = new GameObject(0,1,1,0).set({x:centerX-450,y:0});
-    D.scaleX = 1.8;
-    D.scaleY = 1.8;
-    tutorialObjectsInPlay.push(D);
-
-    var U = new GameObject(0,0,1,1).set({x:centerX-150,y:0});
-    U.scaleX = 1.8;
-    U.scaleY = 1.8;
-    tutorialObjectsInPlay.push(U);
-
-    var A = new GameObject(1,1,0,0).set({x:centerX+150,y:0});
-    A.scaleX = 1.8;
-    A.scaleY = 1.8;
-    tutorialObjectsInPlay.push(A);
-
-    var L = new GameObject(0,1,0,0).set({x:centerX+450,y:0});
-    L.scaleX = 1.8;
-    L.scaleY = 1.8;
-    tutorialObjectsInPlay.push(L);
+    manualTransforms(1);
 
     logo.y = 700;
     logo.alpha = 1;
-    logo.addChild(D,U,A,L);
 
     tagline.alpha = 1;
 
@@ -3552,34 +3580,6 @@ function generateConditions(set,p) {
     tutorialNextButton.removeAllEventListeners();
     tutorialConditions.visible = true;
 
-    function manualTransformTL() {
-      morph(tutorialObjectsInPlay[0].getChildByName("TL"),black,-radius,-radius,0,0,0,0);
-      morph(tutorialObjectsInPlay[1].getChildByName("TL"),black,-radius,-radius,0,0,0,0);
-      morph(tutorialObjectsInPlay[2].getChildByName("TL"),white,-radius,-radius,radius,0,0,0);
-      morph(tutorialObjectsInPlay[3].getChildByName("TL"),black,-radius,-radius,0,0,0,0);
-    }
-
-    function manualTransformTR() {
-      morph(tutorialObjectsInPlay[0].getChildByName("TR"),white,0,-radius,0,radius,0,0);
-      morph(tutorialObjectsInPlay[1].getChildByName("TR"),black,0,-radius,0,0,0,0);
-      morph(tutorialObjectsInPlay[2].getChildByName("TR"),white,0,-radius,0,radius,0,0);
-      morph(tutorialObjectsInPlay[3].getChildByName("TR"),white,0,-radius,0,radius,0,0);
-    }
-
-    function manualTransformBR() {
-      morph(tutorialObjectsInPlay[0].getChildByName("BR"),white,0,0,0,0,radius,0);
-      morph(tutorialObjectsInPlay[1].getChildByName("BR"),white,0,0,0,0,radius,0);
-      morph(tutorialObjectsInPlay[2].getChildByName("BR"),black,0,0,0,0,0,0);
-      morph(tutorialObjectsInPlay[3].getChildByName("BR"),black,0,0,0,0,0,0);
-    }
-
-    function manualTransformBL() {
-      morph(tutorialObjectsInPlay[0].getChildByName("BL"),black,-radius,0,0,0,0,0);
-      morph(tutorialObjectsInPlay[1].getChildByName("BL"),white,-radius,0,0,0,0,radius);
-      morph(tutorialObjectsInPlay[2].getChildByName("BL"),black,-radius,0,0,0,0,0);
-      morph(tutorialObjectsInPlay[3].getChildByName("BL"),black,-radius,0,0,0,0,0);
-    }
-
     createjs.Ticker.setPaused(false);
     createjs.Tween.get(tutorialText1).call(addAnim,[0]).to({alpha:0}, 400, createjs.Ease.cubicOut);
     createjs.Tween.get(whiteCircle).to({alpha:0}, 400, createjs.Ease.cubicOut);
@@ -3597,33 +3597,6 @@ function generateConditions(set,p) {
     createjs.Tween.get(tutorialConditions).wait(600).to({alpha:1}, 400, createjs.Ease.cubicIn);
     createjs.Tween.get(arrow).wait(400).to({alpha:0}, 400, createjs.Ease.cubicOut).to({alpha:1}, 400, createjs.Ease.cubicIn);
     createjs.Tween.get(seqBox).wait(400).to({alpha:0}, 400, createjs.Ease.cubicOut).call(loadConditions).wait(200).to({alpha:1}, 600, createjs.Ease.cubicIn).call(rmAnim);
-
-    function manualTransforms() {
-      manualTransformTL();
-      manualTransformTR();
-      manualTransformBR();
-      manualTransformBL();
-
-      tutorialObjectsInPlay[0].tl = 0;
-      tutorialObjectsInPlay[0].tr = 1;
-      tutorialObjectsInPlay[0].br = 1;
-      tutorialObjectsInPlay[0].bl = 0;
-
-      tutorialObjectsInPlay[1].tl = 0;
-      tutorialObjectsInPlay[1].tr = 0;
-      tutorialObjectsInPlay[1].br = 1;
-      tutorialObjectsInPlay[1].bl = 1;
-
-      tutorialObjectsInPlay[2].tl = 1;
-      tutorialObjectsInPlay[2].tr = 1;
-      tutorialObjectsInPlay[2].br = 0;
-      tutorialObjectsInPlay[2].bl = 0;
-
-      tutorialObjectsInPlay[3].tl = 0;
-      tutorialObjectsInPlay[3].tr = 1;
-      tutorialObjectsInPlay[3].br = 0;
-      tutorialObjectsInPlay[3].bl = 0;
-    }
 
     function loadConditions() {
 
@@ -4261,6 +4234,72 @@ function generateConditions(set,p) {
     stage.update();
   }
 
+  function manualTransforms(n) {
+    manualTransformTL();
+    manualTransformTR();
+    manualTransformBR();
+    manualTransformBL();
+
+    tutorialObjectsInPlay[0].tl = 0;
+    tutorialObjectsInPlay[0].tr = 1;
+    tutorialObjectsInPlay[0].br = 1;
+    tutorialObjectsInPlay[0].bl = 0;
+
+    tutorialObjectsInPlay[1].tl = 0;
+    tutorialObjectsInPlay[1].tr = 0;
+    tutorialObjectsInPlay[1].br = 1;
+    tutorialObjectsInPlay[1].bl = 1;
+
+    tutorialObjectsInPlay[2].tl = 1;
+    tutorialObjectsInPlay[2].tr = 1;
+    tutorialObjectsInPlay[2].br = 0;
+    tutorialObjectsInPlay[2].bl = 0;
+
+    tutorialObjectsInPlay[3].tl = 0;
+    tutorialObjectsInPlay[3].tr = 1;
+    tutorialObjectsInPlay[3].br = 0;
+    tutorialObjectsInPlay[3].bl = 0;
+
+    if (n == 1) {
+      tutorialObjectsInPlay[0].x = centerX-450;
+      tutorialObjectsInPlay[0].y = 0;
+      tutorialObjectsInPlay[1].x = centerX-150;
+      tutorialObjectsInPlay[1].y = 0;
+      tutorialObjectsInPlay[2].x = centerX+150;
+      tutorialObjectsInPlay[2].y = 0;
+      tutorialObjectsInPlay[3].x = centerX+450;
+      tutorialObjectsInPlay[3].y = 0;
+    }
+
+    function manualTransformTL() {
+      morph(tutorialObjectsInPlay[0].getChildByName("TL"),black,-radius,-radius,0,0,0,0);
+      morph(tutorialObjectsInPlay[1].getChildByName("TL"),black,-radius,-radius,0,0,0,0);
+      morph(tutorialObjectsInPlay[2].getChildByName("TL"),white,-radius,-radius,radius,0,0,0);
+      morph(tutorialObjectsInPlay[3].getChildByName("TL"),black,-radius,-radius,0,0,0,0);
+    }
+
+    function manualTransformTR() {
+      morph(tutorialObjectsInPlay[0].getChildByName("TR"),white,0,-radius,0,radius,0,0);
+      morph(tutorialObjectsInPlay[1].getChildByName("TR"),black,0,-radius,0,0,0,0);
+      morph(tutorialObjectsInPlay[2].getChildByName("TR"),white,0,-radius,0,radius,0,0);
+      morph(tutorialObjectsInPlay[3].getChildByName("TR"),white,0,-radius,0,radius,0,0);
+    }
+
+    function manualTransformBR() {
+      morph(tutorialObjectsInPlay[0].getChildByName("BR"),white,0,0,0,0,radius,0);
+      morph(tutorialObjectsInPlay[1].getChildByName("BR"),white,0,0,0,0,radius,0);
+      morph(tutorialObjectsInPlay[2].getChildByName("BR"),black,0,0,0,0,0,0);
+      morph(tutorialObjectsInPlay[3].getChildByName("BR"),black,0,0,0,0,0,0);
+    }
+
+    function manualTransformBL() {
+      morph(tutorialObjectsInPlay[0].getChildByName("BL"),black,-radius,0,0,0,0,0);
+      morph(tutorialObjectsInPlay[1].getChildByName("BL"),white,-radius,0,0,0,0,radius);
+      morph(tutorialObjectsInPlay[2].getChildByName("BL"),black,-radius,0,0,0,0,0);
+      morph(tutorialObjectsInPlay[3].getChildByName("BL"),black,-radius,0,0,0,0,0);
+    }
+  }
+
   // PLAY SEQUENCE
 
   function sequenceReadyLearn() {
@@ -4376,7 +4415,7 @@ function playLearnAction() {
 
     sequence = [];
     loadGame(200);
-
+    startOverlay.cache(0,0,canvas.width,canvas.height);
     stage.update();
 
     createjs.Tween.get(startOverlay, {override:true}).call(addAnim,[0]).to({y:canvas.height}, 600, createjs.Ease.cubicIn).call(handleBeginGame);
@@ -4384,9 +4423,7 @@ function playLearnAction() {
 
     function handleBeginGame() {
       rmAnim();
-
       startOverlay.visible = false;
-
       selectorsBox.mouseEnabled = true;
       sequenceBox.mouseEnabled = true;
       actionsBox.mouseEnabled = true;

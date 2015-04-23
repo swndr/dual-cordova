@@ -73,6 +73,8 @@ function onDeviceReady() {
   var bActions = 0;
   var wComplete = 0;
   var bComplete = 0;
+  var wOpponent = 0;
+  var bOpponent = 0;
   var wScore = 0;
   var bScore = 0;
   var wCounter = 0;
@@ -166,7 +168,7 @@ function onDeviceReady() {
   var newGameBannerText = new createjs.Text("NEW GAME","bold 80px Avenir-Heavy",green).set({x:centerX,y:960});
   newGameBannerText.textAlign = "center";
 
-  var victory = new createjs.Text("","bold 100px Avenir-Heavy",white).set({x:centerX,y:40});
+  var victory = new createjs.Text("","bold 100px Avenir-Heavy",white).set({x:centerX,y:10});
   victory.textAlign = "center";
 
   var whiteTitle = new createjs.Text("WHITE /","bold 55px Avenir-Heavy",white).set({x:70,y:250});
@@ -179,6 +181,8 @@ function onDeviceReady() {
   whiteActions.textAlign = "left";
   var whiteComplete = new createjs.Text("","100 55px Avenir-Book",white).set({x:70,y:650});
   whiteComplete.textAlign = "left"; 
+  var whiteOpponent = new createjs.Text("","100 55px Avenir-Book",black).set({x:70,y:750});
+  whiteOpponent.textAlign = "left"; 
 
   var blackTitle = new createjs.Text("BLACK /","bold 55px Avenir-Heavy",black).set({x:(canvas.width/2)+60,y:250});
   blackTitle.textAlign = "left";
@@ -190,8 +194,10 @@ function onDeviceReady() {
   blackActions.textAlign = "left";
   var blackComplete = new createjs.Text("","100 55px Avenir-Book",black).set({x:(canvas.width/2)+50,y:650});
   blackComplete.textAlign = "left";
+  var blackOpponent = new createjs.Text("","100 55px Avenir-Book",white).set({x:(canvas.width/2)+50,y:750});
+  blackOpponent.textAlign = "left"; 
 
-  winOverlay.addChild(winBG,newGameBanner,newGameBannerText,victory,whiteTitle,whiteTurns,whiteConditions,whiteActions,whiteComplete,blackTitle,blackTurns,blackConditions,blackActions,blackComplete);
+  winOverlay.addChild(winBG,newGameBanner,newGameBannerText,victory,whiteTitle,whiteTurns,whiteConditions,whiteActions,whiteComplete,whiteOpponent,blackTitle,blackTurns,blackConditions,blackActions,blackComplete,blackOpponent);
 
   // CONFETTI
 
@@ -1286,6 +1292,8 @@ function generateConditions(set,p) {
     bActions = 0;
     wComplete = 0;
     bComplete = 0;
+    wOpponent = 0;
+    bOpponent = 0;
 
     wTurn = true;
     whiteTurn.visible = true;
@@ -1898,12 +1906,18 @@ function generateConditions(set,p) {
     if (objectsInPlay[i].tl == 0 && objectsInPlay[i].tr == 0 && objectsInPlay[i].br == 0 && objectsInPlay[i].bl == 0) {
       if (objectsInPlay[i].complete === false && wTurn == false) {
         bComplete++;
+      } 
+      if (objectsInPlay[i].complete === false && wTurn == true) {
+        wOpponent++;
       }
       objectsInPlay[i].complete = 0;
       bScore++;
     } else if (objectsInPlay[i].tl == 1 && objectsInPlay[i].tr == 1 && objectsInPlay[i].br == 1 && objectsInPlay[i].bl == 1) {
       if (objectsInPlay[i].complete === false && wTurn == true) {
         wComplete++;
+      } 
+      if (objectsInPlay[i].complete === false && wTurn == false) {
+        bOpponent++;
       }
       wScore++;
       objectsInPlay[i].complete = 1;
@@ -2065,12 +2079,17 @@ function generateConditions(set,p) {
     whiteTurns.text = wTurns + " TURNS";
     whiteConditions.text = wConditions + " CONDITIONS USED";
     whiteActions.text = wActions + " ACTIONS USED";
-    whiteComplete.text = wComplete + " COMPLETED CIRCLES";
-
+    if (wComplete == 1) { whiteComplete.text = wComplete + " COMPLETED CIRCLE"; } else { whiteComplete.text = wComplete + " COMPLETED CIRCLES"; }
+    if (wOpponent == 1) { whiteOpponent.text = wOpponent + " COMPLETED SQUARE"; } else { whiteOpponent.text = wOpponent + " COMPLETED SQUARES"; }
+    console.log(wComplete);
+    console.log(wOpponent);
     blackTurns.text = bTurns + " TURNS";
     blackConditions.text = bConditions + " CONDITIONS USED";
     blackActions.text = bActions + " ACTIONS USED";
-    blackComplete.text = bComplete + " COMPLETED SQUARES";
+    if (bComplete == 1) { blackComplete.text = bComplete + " COMPLETED SQUARE"; } else { blackComplete.text = bComplete + " COMPLETED SQUARES"; }
+    if (bOpponent == 1) { blackOpponent.text = bOpponent + " COMPLETED CIRCLE"; } else { blackOpponent.text = bOpponent + " COMPLETED CIRCLES"; }
+    console.log(bComplete);
+    console.log(bOpponent);
 
     selectorsBox.mouseEnabled = false;
     sequenceBox.mouseEnabled = false;
